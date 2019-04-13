@@ -8,14 +8,19 @@ Jose Antonio Culla de Moya
 '''
 
 import argparse
+import re
 
 def load_index(index_dir):
     return 0
 
 def parse_query(query):
-    return 0
+    especial_char = re.compile(r'[\(\)]')
+    query = especial_char.sub(r' \g<0> ', query)
+    query_list = query.split()
+    
+    return query_list
 
-def search(parses_query):
+def search(parsed_query):
     return 0
 
 def search_and_print(text):
