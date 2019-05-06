@@ -10,7 +10,23 @@ Jose Antonio Culla de Moya
 '''
 
 import sys
+import os
 import argparse
+
+doc_id = -1
+
+def get_doc_id():
+
+    global doc_id
+    doc_id += 1
+    return doc_id
+
+def get_files_from_directory(directory):
+
+    for filename in os.listdir(directory):
+
+        print(get_doc_id())
+        print(filename)
 
 if __name__ == "__main__":
 
@@ -22,5 +38,7 @@ if __name__ == "__main__":
 
     directory = args.directory
     index = args.index
+
+    get_files_from_directory(directory)
 
     
