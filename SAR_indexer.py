@@ -13,8 +13,14 @@ import sys
 import argparse
 
 if __name__ == "__main__":
+
     parser = argparse.ArgumentParser()
     parser.add_argument("directory", help = "News directory")
     parser.add_argument("index", help = "Index name")
+
+    args = parser.parse_args()
+
+    directory = args.directory
+    index = args.index
 
     
