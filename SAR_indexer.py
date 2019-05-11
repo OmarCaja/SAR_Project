@@ -16,6 +16,8 @@ import pickle
 import re
 import json
 
+index = {}
+
 doc_id = -1
 new_pos_in_doc = -1
 
@@ -93,7 +95,6 @@ if __name__ == "__main__":
 
     docs_directory = args.directory
     index_name = args.index
-    index = {}
 
     index_files_from_directory(docs_directory)
 
