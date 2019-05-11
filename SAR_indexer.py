@@ -17,13 +17,18 @@ import re
 import json
 
 term_index = {}
-doc_index = {}
+doc_new_index = {}
+
+doc_new_index_save_name = 'doc_new_index'
 
 doc_id = 0
 new_pos_in_doc = 0
 doc_id_news_id_separator = '_'
 
 directory_path = '/'
+
+json_new_article = 'article'
+json_new_id = 'id'
 
 clean_re = re.compile('\\W+')
 
@@ -66,9 +71,9 @@ def get_new_key():
     return str(get_doc_id()) + doc_id_news_id_separator + str(get_new_pos_in_doc())
 
 
-def get_json_data(filename):
+def get_json_data(doc_name):
 
-    with open(filename, "r") as json_file:
+    with open(doc_name, "r") as json_file:
 
         return json.load(json_file)
 
@@ -91,9 +96,21 @@ def index_word(word):
             list_values.append(get_new_key())
 
 
-def index_value_from_json(json_data, key):
+def index_doc_new(doc_name, new_id):
+
+    value = doc_new_index.get(get_new_key())
+
+    if value == None:
+
+        value = (doc_name, new_id)
+        doc_new_index[get_new_key()] = value
+
+
+def index_value_from_json(json_data, key, doc_name):
 
     for new in json_data:
+
+        index_doc_new(doc_name, new[json_new_id])
 
         value = new[key]
         value = clean_text(value)
@@ -108,25 +125,25 @@ def index_value_from_json(json_data, key):
 
 def index_files_from_directory(directory):
 
-    for filename in os.listdir(directory):
+    for doc_name in os.listdir(directory):
 
-        json_data = get_json_data(directory + directory_path + filename)
-        index_value_from_json(json_data, 'article')
+        json_data = get_json_data(directory + directory_path + doc_name)
+        index_value_from_json(json_data, json_new_article, doc_name)
 
         reset_new_pos_in_doc()
         increase_doc_id()
 
 
-def print_index():
+def print_index(index):
 
-    for word in term_index.items():
+    for item in index.items():
 
-        print(word)
+        print(item)
 
 
-def save_index(index, filename):
+def save_index(index, doc_name):
 
-    with open(filename, "wb") as fh:
+    with open(doc_name, "wb") as fh:
         pickle.dump(index, fh)
 
 
@@ -142,6 +159,8 @@ if __name__ == "__main__":
 
     index_files_from_directory(docs_directory)
 
-    print_index()
+    print_index(term_index)
+    print_index(doc_new_index)
 
     save_index(term_index, index_name)
+    save_index(doc_new_index, doc_new_index_save_name)
