@@ -43,10 +43,16 @@ def get_new_pos_in_doc():
     return new_pos_in_doc
 
 
+def reset_new_pos_in_doc():
+
+    global new_pos_in_doc
+    new_pos_in_doc = -1
+
+
 def get_json_data(filename):
 
     with open(filename, "r") as json_file:
-        
+
         return json.load(json_file)
 
 
@@ -68,8 +74,7 @@ def index_files_from_directory(directory):
         json_data = get_json_data(directory + directory_path + filename)
         index_value_from_json(json_data, 'article')
 
-        global new_pos_in_doc
-        new_pos_in_doc = -1
+        reset_new_pos_in_doc()
 
 
 def save_index(index, filename):
