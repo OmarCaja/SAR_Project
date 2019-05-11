@@ -25,7 +25,6 @@ doc_id = 0
 new_pos_in_doc = 0
 doc_id_news_id_separator = '_'
 
-directory_path = '/'
 
 json_new_article = 'article'
 json_new_id = 'id'
