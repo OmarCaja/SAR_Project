@@ -20,9 +20,11 @@ new_pos_in_doc = -1
 
 clean_re = re.compile('\\W+')
 
+
 def clean_text(text):
 
-	return clean_re.sub(' ', text)
+    return clean_re.sub(' ', text)
+
 
 def get_doc_id():
 
@@ -30,11 +32,13 @@ def get_doc_id():
     doc_id += 1
     return doc_id
 
+
 def get_new_pos_in_doc():
 
     global new_pos_in_doc
     new_pos_in_doc += 1
     return new_pos_in_doc
+
 
 def get_files_from_directory(directory):
 
@@ -46,16 +50,18 @@ def get_files_from_directory(directory):
         global new_pos_in_doc
         new_pos_in_doc = -1
 
+
 def save_index(index, filename):
 
     with open(filename, "wb") as fh:
         pickle.dump(index, fh)
 
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("directory", help = "News directory")
-    parser.add_argument("index", help = "Index name")
+    parser.add_argument("directory", help="News directory")
+    parser.add_argument("index", help="Index name")
 
     args = parser.parse_args()
 
@@ -66,4 +72,3 @@ if __name__ == "__main__":
     get_files_from_directory(docs_directory)
 
     save_index(index, index_name)
-    
