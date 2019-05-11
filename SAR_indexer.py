@@ -16,11 +16,12 @@ import pickle
 import re
 
 doc_id = -1
+new_pos_in_doc = -1
 
 clean_re = re.compile('\\W+')
 
 def clean_text(text):
-    
+
 	return clean_re.sub(' ', text)
 
 def get_doc_id():
@@ -29,12 +30,21 @@ def get_doc_id():
     doc_id += 1
     return doc_id
 
+def get_new_pos_in_doc():
+
+    global new_pos_in_doc
+    new_pos_in_doc += 1
+    return new_pos_in_doc
+
 def get_files_from_directory(directory):
 
     for filename in os.listdir(directory):
 
         print(get_doc_id())
         print(filename)
+
+        global new_pos_in_doc
+        new_pos_in_doc = -1
 
 def save_index(index, filename):
 
