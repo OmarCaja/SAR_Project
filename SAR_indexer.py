@@ -63,7 +63,7 @@ def increase_new_pos_id():
 def reset_new_pos_in_doc():
 
     global new_pos_in_doc
-    new_pos_in_doc = -1
+    new_pos_in_doc = 0
 
 
 def get_new_key():
@@ -159,7 +159,6 @@ if __name__ == "__main__":
 
     index_files_from_directory(docs_directory)
 
-    print_index(term_index)
     print_index(doc_new_index)
 
     save_index(term_index, index_name)
