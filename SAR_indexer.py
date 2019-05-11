@@ -125,13 +125,17 @@ def index_value_from_json(json_data, key, doc_name):
 
 def index_files_from_directory(directory):
 
-    for doc_name in os.listdir(directory):
+    for subdir, dirs, files in os.walk(directory):
 
-        json_data = get_json_data(directory + directory_path + doc_name)
-        index_value_from_json(json_data, json_new_article, doc_name)
+        for file in files:
 
-        reset_new_pos_in_doc()
-        increase_doc_id()
+            file_path = os.path.join(subdir, file)
+
+            json_data = get_json_data(file_path)
+            index_value_from_json(json_data, json_new_article, file)
+
+            reset_new_pos_in_doc()
+            increase_doc_id()
 
 
 def print_index(index):
