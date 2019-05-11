@@ -16,6 +16,9 @@ import pickle
 import re
 import json
 
+term_index = {}
+doc_index = {}
+
 doc_id = 0
 new_pos_in_doc = 0
 doc_id_news_id_separator = '_'
@@ -70,16 +73,16 @@ def get_json_data(filename):
         return json.load(json_file)
 
 
-def index_word(index, word):
+def index_word(word):
 
-    list_values = index.get(word)
+    list_values = term_index.get(word)
 
     if list_values == None:
 
         list_values = []
         list_values.append(get_new_key())
 
-        index[word] = list_values
+        term_index[word] = list_values
 
     else:
 
@@ -88,7 +91,7 @@ def index_word(index, word):
             list_values.append(get_new_key())
 
 
-def index_value_from_json(index, json_data, key):
+def index_value_from_json(json_data, key):
 
     for new in json_data:
 
@@ -98,25 +101,25 @@ def index_value_from_json(index, json_data, key):
 
         for word in value_list:
 
-            index_word(index, word)
+            index_word(word)
 
         increase_new_pos_id()
 
 
-def index_files_from_directory(index, directory):
+def index_files_from_directory(directory):
 
     for filename in os.listdir(directory):
 
         json_data = get_json_data(directory + directory_path + filename)
-        index_value_from_json(index, json_data, 'article')
+        index_value_from_json(json_data, 'article')
 
         reset_new_pos_in_doc()
         increase_doc_id()
 
 
-def print_index(index):
+def print_index():
 
-    for word in index.items():
+    for word in term_index.items():
 
         print(word)
 
@@ -134,13 +137,11 @@ if __name__ == "__main__":
     parser.add_argument("index", help="Index name")
 
     args = parser.parse_args()
-
     docs_directory = args.directory
     index_name = args.index
-    index = {}
 
-    index_files_from_directory(index, docs_directory)
+    index_files_from_directory(docs_directory)
 
-    print_index(index)
+    print_index()
 
-    save_index(index, index_name)
+    save_index(term_index, index_name)
