@@ -46,12 +46,14 @@ def get_new_pos_in_doc():
 def get_json_data(filename):
 
     with open(filename, "r") as json_file:
+        
         return json.load(json_file)
 
 
 def index_value_from_json(json_data, key):
 
     for new in json_data:
+
         print(new[key])
         print(get_new_pos_in_doc())
 
