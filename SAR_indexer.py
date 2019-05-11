@@ -16,8 +16,8 @@ import pickle
 import re
 import json
 
-doc_id = -1
-new_pos_in_doc = -1
+doc_id = 0
+new_pos_in_doc = 0
 doc_id_news_id_separator = '_'
 
 directory_path = '/'
@@ -32,22 +32,35 @@ def clean_text(text):
 
 def get_doc_id():
 
+    return doc_id
+
+
+def increase_doc_id():
+
     global doc_id
     doc_id += 1
-    return doc_id
 
 
 def get_new_pos_in_doc():
 
+    return new_pos_in_doc
+
+
+def increase_new_pos_id():
+
     global new_pos_in_doc
     new_pos_in_doc += 1
-    return new_pos_in_doc
 
 
 def reset_new_pos_in_doc():
 
     global new_pos_in_doc
     new_pos_in_doc = -1
+
+
+def get_new_key():
+
+    return str(get_doc_id()) + doc_id_news_id_separator + str(get_new_pos_in_doc())
 
 
 def get_json_data(filename):
@@ -61,21 +74,18 @@ def index_word(index, word):
 
     list_values = index.get(word)
 
-    print(list_values)
-
     if list_values == None:
 
         list_values = []
-        list_values.append(
-            str(get_doc_id()) + doc_id_news_id_separator + str(get_new_pos_in_doc()))
+        list_values.append(get_new_key())
+
+        index[word] = list_values
 
     else:
 
-        print(list_values)
-        if word not in list_values:
+        if get_new_key() not in list_values:
 
-            list_values.append(
-                get_doc_id() + doc_id_news_id_separator + get_new_pos_in_doc())
+            list_values.append(get_new_key())
 
 
 def index_value_from_json(index, json_data, key):
@@ -90,6 +100,8 @@ def index_value_from_json(index, json_data, key):
 
             index_word(index, word)
 
+        increase_new_pos_id()
+
 
 def index_files_from_directory(index, directory):
 
@@ -99,6 +111,7 @@ def index_files_from_directory(index, directory):
         index_value_from_json(index, json_data, 'article')
 
         reset_new_pos_in_doc()
+        increase_doc_id()
 
 
 def print_index(index):
