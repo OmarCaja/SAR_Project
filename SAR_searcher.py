@@ -187,8 +187,9 @@ def search(query):
 
 def search_and_print(text):
         parsed_query = parse_query(query)
-        print(parsed_query)
-        search(parsed_query)
+        doc_list = search(parsed_query)
+        print(doc_list)
+
 #pasar una lista con doc_id,y un num indica cuando doc quieres recuperar
 #devuelve una lista que están dato json del num primer doc_id
 def get_doc_info(lista,num):
