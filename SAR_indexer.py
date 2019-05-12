@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 
 '''
-Proyecto de Prácticas SAR: indexer
+Proyecto de Practicas: SAR indexer
 Autores:
-Omar Caja García
+Omar Caja Garcia
 Zhihao Zhang
-Pablo López Orrios
+Pablo Lopez Orrios
 Jose Antonio Culla de Moya
 '''
 
@@ -161,5 +161,4 @@ if __name__ == "__main__":
 
     index_files_from_directory(docs_directory)
 
-    save_index(term_index, index_name)
-    save_index(doc_new_index, doc_new_index_save_name)
+    save_index((term_index, doc_new_index), index_name)

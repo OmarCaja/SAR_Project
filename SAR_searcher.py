@@ -12,6 +12,11 @@ import sys
 import argparse
 import re
 import json
+import os
+import pickle
+
+term_index = {}
+doc_index = {}
 
 def load_json(filename):
     with open(filename) as fh:
@@ -39,10 +44,10 @@ def opAND(list1,list2):
             j+=1
     return res
 
-#por eficiencia,cuando (l1 and notl2) o (notl1 and l2) se calcula con esta función
+#por eficiencia,cuando (l1 and notl2) o (notl1 and l2) se calcula con esta funcion
 #caso = 1 (notl1 and l2)
 #caso = 2 (l1 and notl2)
-def opAND(list1,list2,caso):
+def opANDNOT(list1,list2,caso):
     if caso == 1:
         si = list2
         no = list1
@@ -50,7 +55,7 @@ def opAND(list1,list2,caso):
         si = list1
         no = list2
 
-    res = list()
+    res = []
     i = 0
     j = 0
     while i < len(si) and j < len(no):
@@ -63,7 +68,7 @@ def opAND(list1,list2,caso):
         else:
             j+=1
     while i < len(si):
-        res.append[si[i]]
+        res.append(si[i])
         i+=1
     return res
 
@@ -123,8 +128,14 @@ operators = {
     ')': 4 
     }
 
-def load_index(index_dir):
-    return 0
+def load_index(index_file):
+    with open(index_file, "rb") as fh:
+        indeces = pickle.load(fh)
+        global term_index
+        global doc_index
+        (term_index, doc_index) = indeces
+            
+
 
 def parse_query(query):
     output = []
@@ -158,16 +169,30 @@ def parse_query(query):
 
     return output
 
-def search(parsed_query):
-    return 0
+def search(query):
+    stack = []
+    for item in query:     
+        if item == 'NOT':
+            opres = opNOT(20, stack.pop(0))
+            stack.insert(0, opres)
+        elif item == 'AND':
+            opres = opAND(stack.pop(0), stack.pop(0))
+            stack.insert(0, opres)
+        elif item == 'OR':
+            opres = opOR(stack.pop(0), stack.pop(0))
+            stack.insert(0, opres)
+        else:
+            stack.insert(0, term_index.get(item,[]))
+    return stack.pop(0)
 
 def search_and_print(text):
         parsed_query = parse_query(query)
-        print(parsed_query)
-        search(parsed_query)
+        doc_list = search(parsed_query)
+        res = get_doc_info(doc_list, 5)
+        show_result(res)
+
 #pasar una lista con doc_id,y un num indica cuando doc quieres recuperar
-#devuelve una lista que están dato json del num primer doc_id
-#!!!!!!doc_id es el indice del doc_id,si cargar de otro nombre,aquí también hay que cambiar!!!!!!
+#devuelve una lista que estan dato json del num primer doc_id
 def get_doc_info(lista,num):
     res = []
     i = 0
@@ -175,7 +200,7 @@ def get_doc_info(lista,num):
         if(i >= num):
             break
         i+=1
-        obj  = doc_id[doc]
+        obj  = doc_index[doc]
         documento = get_json_data(obj[0])
         for art in documento:
             if(art["id"] == obj[1]):
@@ -183,7 +208,7 @@ def get_doc_info(lista,num):
                 break
     return res
 
-#pasa la lista obtenida de la función get_doc_info
+#pasa la lista obtenida de la funcion get_doc_info
 def show_result(lista):
     n = len(lista)
     if(n <= 2):
@@ -215,12 +240,12 @@ def show_result(lista):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("index", help="index directory")
+    parser.add_argument("index", help="index file")
     parser.add_argument("-q", help="query to search")
 
     args = parser.parse_args()
 
-    index = load_index(args.index)
+    load_index(args.index)
 
     if args.q:
         search_and_print(args.q)
