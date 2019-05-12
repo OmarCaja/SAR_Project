@@ -11,7 +11,18 @@ Jose Antonio Culla de Moya
 import sys
 import argparse
 import re
+import json
 
+def load_json(filename):
+    with open(filename) as fh:
+        obj = json.load(fh)
+    return obj
+
+def get_json_data(doc_name):
+
+    with open(doc_name, "r") as json_file:
+
+        return json.load(json_file)
 
 def opAND(list1,list2):
     i = 0
@@ -154,6 +165,53 @@ def search_and_print(text):
         parsed_query = parse_query(query)
         print(parsed_query)
         search(parsed_query)
+#pasar una lista con doc_id,y un num indica cuando doc quieres recuperar
+#devuelve una lista que están dato json del num primer doc_id
+#!!!!!!doc_id es el indice del doc_id,si cargar de otro nombre,aquí también hay que cambiar!!!!!!
+def get_doc_info(lista,num):
+    res = []
+    i = 0
+    for doc in lista:
+        if(i >= num):
+            break
+        i+=1
+        obj  = doc_id[doc]
+        documento = get_json_data(obj[0])
+        for art in documento:
+            if(art["id"] == obj[1]):
+                res.append(art)
+                break
+    return res
+
+#pasa la lista obtenida de la función get_doc_info
+def show_result(lista):
+    n = len(lista)
+    if(n <= 2):
+        for art in lista:
+            print("fecha: ",art["date"])
+            print("titulo: ",art["title"])
+            print("keywords: ",art["keywords"])
+            print("articulo: ",art["article"])
+    elif(n<=5):
+        for art in lista:
+            print("fecha: ",art["date"])
+            print("titulo: ",art["title"])
+            print("keywords: ",art["keywords"])
+            contenido = ""
+            i = 0
+            for c in art["article"]:
+                if(i >= 100):
+                    break
+                contenido+=c
+            print(c)
+    else:
+        i = 0
+        for art in lista:
+            if(i >= 10):
+                break
+            print("fecha: ",art["date"],"   titulo: ",art["title"],"   keywords: ",art["keywords"])
+
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
