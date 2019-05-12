@@ -101,12 +101,13 @@ def opOR(list1,list2):
 
 
 #param: num = numero de docid
-def opNOT(num,list):
+def opNOT(doc_id,lista):
     i = 0
     j = 0
+    doc = doc_id.keys()
     res = list()
-    while i < len(list):
-        if j == list[i]:
+    while i < len(lista):
+        if doc[j] == list[i]:
             j+=1
             i+=1
         elif j < i:
@@ -114,8 +115,8 @@ def opNOT(num,list):
             j+=1
         else:
             i+=1
-    while j < num:
-        res.append(j)
+    while j < len(doc):
+        res.append(doc[j])
         j+=1
     return res
          
