@@ -28,7 +28,7 @@ def opAND(list1,list2):
             j+=1
     return res
 
-#por eficiencia,cuando (l1 and notl2) o (notl1 and l2) se calcula con esta función
+#por eficiencia,cuando (l1 and notl2) o (notl1 and l2) se calcula con esta funcion
 #caso = 1 (notl1 and l2)
 #caso = 2 (l1 and notl2)
 def opAND(list1,list2,caso):
@@ -147,7 +147,18 @@ def parse_query(query):
 
     return output
 
-def search(parsed_query):
+def search(query):
+    stack = []
+    result = []
+    for item in query:
+        if operators.get(item, False):
+            stack.insert(0, item)
+        elif item == 'NOT':
+            opNOT(20, stack.pop(0))
+        elif item == 'AND':
+            pass
+        elif item == 'OR':
+            pass
     return 0
 
 def search_and_print(text):
