@@ -12,6 +12,11 @@ import sys
 import argparse
 import re
 import json
+import os
+import pickle
+
+term_index = []
+doc_index = []
 
 def load_json(filename):
     with open(filename) as fh:
@@ -124,7 +129,17 @@ operators = {
     }
 
 def load_index(index_dir):
-    return 0
+    for _, _, files in os.walk(index_dir):
+        for file in files:
+            if (file == 'term_index'):
+                with open(file, "rb") as fh:
+                    global term_index
+                    term_index = pickle.load(fh)
+            elif (file == 'doc_new_index'):
+                with open(file, "rb") as fh:
+                    global doc_index
+                    doc_index = pickle.load(fh)
+
 
 def parse_query(query):
     output = []
@@ -226,7 +241,7 @@ def show_result(lista):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("index", help="index directory")
+    parser.add_argument("index", help="index file")
     parser.add_argument("-q", help="query to search")
 
     args = parser.parse_args()
