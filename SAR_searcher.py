@@ -128,17 +128,13 @@ operators = {
     ')': 4 
     }
 
-def load_index(index_dir):
-    for _, _, files in os.walk(index_dir):
-        for file in files:
-            if (file == 'term_index'):
-                with open(file, "rb") as fh:
-                    global term_index
-                    term_index = pickle.load(fh)
-            elif (file == 'doc_new_index'):
-                with open(file, "rb") as fh:
-                    global doc_index
-                    doc_index = pickle.load(fh)
+def load_index(index_file):
+    with open(file, "rb") as fh:
+        indeces = pickle.load(fh)
+        global term_index
+        global doc_index
+        (term_index, doc_index) = indeces
+            
 
 
 def parse_query(query):
