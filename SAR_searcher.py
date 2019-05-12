@@ -168,10 +168,10 @@ def search_and_print(text):
 #pasar una lista con doc_id,y un num indica cuando doc quieres recuperar
 #devuelve una lista que están dato json del num primer doc_id
 #!!!!!!doc_id es el indice del doc_id,si cargar de otro nombre,aquí también hay que cambiar!!!!!!
-def get_doc_info(list,num):
+def get_doc_info(lista,num):
     res = []
     i = 0
-    for doc in list:
+    for doc in lista:
         if(i >= num):
             break
         i+=1
@@ -182,6 +182,35 @@ def get_doc_info(list,num):
                 res.append(art)
                 break
     return res
+
+#pasa la lista obtenida de la función get_doc_info
+def show_result(lista):
+    n = len(lista)
+    if(n <= 2):
+        for art in lista:
+            print("fecha: ",art["date"])
+            print("titulo: ",art["title"])
+            print("keywords: ",art["keywords"])
+            print("articulo: ",art["article"])
+    elif(n<=5):
+        for art in lista:
+            print("fecha: ",art["date"])
+            print("titulo: ",art["title"])
+            print("keywords: ",art["keywords"])
+            contenido = ""
+            i = 0
+            for c in art["article"]:
+                if(i >= 100):
+                    break
+                contenido+=c
+            print(c)
+    else:
+        i = 0
+        for art in lista:
+            if(i >= 10):
+                break
+            print("fecha: ",art["date"],"   titulo: ",art["title"],"   keywords: ",art["keywords"])
+
 
 
 if __name__ == "__main__":
