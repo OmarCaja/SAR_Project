@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 
 '''
-Proyecto de Prácticas SAR: indexer
+Proyecto de Practicas: SAR indexer
 Autores:
-Omar Caja García
+Omar Caja Garcia
 Zhihao Zhang
-Pablo López Orrios
+Pablo Lopez Orrios
 Jose Antonio Culla de Moya
 '''
 
