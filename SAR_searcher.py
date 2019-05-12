@@ -129,7 +129,7 @@ operators = {
     }
 
 def load_index(index_file):
-    with open(file, "rb") as fh:
+    with open(index_file, "rb") as fh:
         indeces = pickle.load(fh)
         global term_index
         global doc_index
@@ -171,27 +171,28 @@ def parse_query(query):
 
 def search(query):
     stack = []
-    for item in query:
-        if operators.get(item, False):
-            stack.insert(0, item)
-        elif item == 'NOT':
-            opres = opNOT(20, term_index.get(stack.pop(0),[]))
+    for item in query:     
+        if item == 'NOT':
+            opres = opNOT(20, stack.pop(0))
             stack.insert(0, opres)
         elif item == 'AND':
-            opres = opAND(term_index.get(stack.pop(0),[]), term_index.get(stack.pop(0),[]))
+            opres = opAND(stack.pop(0), stack.pop(0))
             stack.insert(0, opres)
         elif item == 'OR':
-            opres = opOR(term_index.get(stack.pop(0),[]), term_index.get(stack.pop(0),[]))
+            opres = opOR(stack.pop(0), stack.pop(0))
             stack.insert(0, opres)
+        else:
+            stack.insert(0, term_index.get(item,[]))
     return stack.pop(0)
 
 def search_and_print(text):
         parsed_query = parse_query(query)
         doc_list = search(parsed_query)
-        print(doc_list)
+        res = get_doc_info(doc_list, 5)
+        show_result(res)
 
 #pasar una lista con doc_id,y un num indica cuando doc quieres recuperar
-#devuelve una lista que están dato json del num primer doc_id
+#devuelve una lista que estan dato json del num primer doc_id
 def get_doc_info(lista,num):
     res = []
     i = 0
@@ -207,7 +208,7 @@ def get_doc_info(lista,num):
                 break
     return res
 
-#pasa la lista obtenida de la función get_doc_info
+#pasa la lista obtenida de la funcion get_doc_info
 def show_result(lista):
     n = len(lista)
     if(n <= 2):
