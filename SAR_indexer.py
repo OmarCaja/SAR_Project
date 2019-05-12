@@ -161,5 +161,4 @@ if __name__ == "__main__":
 
     index_files_from_directory(docs_directory)
 
-    save_index(term_index, index_name)
-    save_index(doc_new_index, doc_new_index_save_name)
+    save_index((term_index, doc_new_index), index_name)
