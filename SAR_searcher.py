@@ -101,17 +101,17 @@ def opOR(list1,list2):
 
 
 #param: num = numero de docid
-def opNOT(doc_id,lista):
+def opNOT(lista):
     i = 0
     j = 0
-    doc = doc_id.keys()
-    res = list()
+    doc = doc_index.keys()
+    res = []
     while i < len(lista):
-        if doc[j] == list[i]:
+        if doc[j] == lista[i]:
             j+=1
             i+=1
         elif j < i:
-            res.append(j)
+            res.append(doc[j])
             j+=1
         else:
             i+=1
@@ -174,7 +174,7 @@ def search(query):
     stack = []
     for item in query:     
         if item == 'NOT':
-            opres = opNOT(20, stack.pop(0))
+            opres = opNOT(stack.pop(0))
             stack.insert(0, opres)
         elif item == 'AND':
             opres = opAND(stack.pop(0), stack.pop(0))
