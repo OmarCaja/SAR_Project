@@ -94,21 +94,21 @@ def index_word(word):
             list_values.append(get_new_key())
 
 
-def index_doc_new(doc_name, new_id):
+def index_doc_new(file_path, new_id):
 
     value = doc_new_index.get(get_new_key())
 
     if value == None:
 
-        value = (doc_name, new_id)
+        value = (file_path, new_id)
         doc_new_index[get_new_key()] = value
 
 
-def index_value_from_json(json_data, key, doc_name):
+def index_value_from_json(json_data, key, file_path):
 
     for new in json_data:
 
-        index_doc_new(doc_name, new[json_new_id])
+        index_doc_new(file_path, new[json_new_id])
 
         value = new[key]
         value = clean_text(value)
@@ -130,7 +130,7 @@ def index_files_from_directory(directory):
             file_path = os.path.join(subdir, file)
 
             json_data = get_json_data(file_path)
-            index_value_from_json(json_data, json_new_article, file)
+            index_value_from_json(json_data, json_new_article, file_path)
 
             reset_new_pos_in_doc()
             increase_doc_id()
@@ -160,6 +160,8 @@ if __name__ == "__main__":
     index_name = args.index
 
     index_files_from_directory(docs_directory)
+
+    print_index(doc_new_index)
 
     save_index(term_index, index_name)
     save_index(doc_new_index, doc_new_index_save_name)
