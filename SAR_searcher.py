@@ -128,7 +128,6 @@ def opNOT(l):
 
 
 #query:una lista donde contiene los terminos
-#index: indice del termino donde contiene[term1: [(docid,frec),....]],si es global,cambiar el nombre al global y quitar el parametro
 #lista: lista resultado donde contiene docid
 #peso que usamos es lnc.ltc(lo mismo que la trasparencia de teoria)
 #devuelve una lista de lista,tiene siguiente formato
@@ -148,7 +147,7 @@ def ranking(query,index,lista):
     for term in queryWeight.keys():
         f = queryWeight[term]
         tf = 1+math.log(f,10)
-        df = len(index.get(term,list()))
+        df = len(term_index.get(term,list()))
         idf = math.log(len(doc_index)/df,10)
         queryWeight[term] = idf * tf
         for doc in lista:
