@@ -29,10 +29,12 @@ def get_json_data(doc_name):
 
         return json.load(json_file)
 
-def opAND(list1,list2):
+def opAND(l1,l2):
     i = 0
     j = 0
     res = list()
+    list1 = l1.keys()
+    list2 = l2.keys()
     while i < len(list1) and j < len(list2):
         if list1[i] == list2[j]:
             res.append(list1[i])
@@ -73,10 +75,12 @@ def opANDNOT(list1,list2,caso):
     return res
 
 
-def opOR(list1,list2):
+def opOR(l1,l2):
     i = 0
     j = 0
     res = list()
+    list1 = l1.keys()
+    list2 = l2.keys()
     while i < len(list1) and j < len(list2):
         if list1[i] == list2[j]:
             res.append(list1[i])
@@ -101,11 +105,12 @@ def opOR(list1,list2):
 
 
 #param: num = numero de docid
-def opNOT(lista):
+def opNOT(l):
     i = 0
     j = 0
     doc = doc_index.keys()
     res = []
+    lista = l.keys()
     while i < len(lista):
         if doc[j] == lista[i]:
             j+=1
