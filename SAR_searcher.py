@@ -189,18 +189,14 @@ def search(query):
 def search_and_print(text):
         parsed_query = parse_query(query)
         doc_list = search(parsed_query)
-        res = get_doc_info(doc_list, 5)
+        res = get_doc_info(doc_list)
         show_result(res)
 
 #pasar una lista con doc_id,y un num indica cuando doc quieres recuperar
 #devuelve una lista que estan dato json del num primer doc_id
-def get_doc_info(lista,num):
+def get_doc_info(lista):
     res = []
-    i = 0
     for doc in lista:
-        if(i >= num):
-            break
-        i+=1
         obj  = doc_index[doc]
         documento = get_json_data(obj[0])
         for art in documento:
@@ -236,6 +232,7 @@ def show_result(lista):
             if(i >= 10):
                 break
             print("fecha: ",art["date"],"   titulo: ",art["title"],"   keywords: ",art["keywords"])
+    print(n)
 
 
 
