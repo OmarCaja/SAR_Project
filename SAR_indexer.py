@@ -83,20 +83,21 @@ def get_json_data(doc_name):
 
 def index_word(word):
 
-    list_values = term_index.get(word)
+    dict_values = term_index.get(word)
 
-    if list_values == None:
+    if dict_values == None:
 
-        list_values = []
-        list_values.append(get_new_key())
+        dict_values = {}
 
-        term_index[word] = list_values
+        term_index[word] = dict_values
+
+    if dict_values.get(get_new_key(), 0) == 0:
+
+        dict_values[get_new_key()] = 1
 
     else:
 
-        if get_new_key() not in list_values:
-
-            list_values.append(get_new_key())
+        dict_values[get_new_key()] = dict_values.get(get_new_key()) + 1 
 
 
 def index_doc_new(file_path, new_id):
@@ -167,4 +168,7 @@ if __name__ == "__main__":
 
     index_files_from_directory(docs_directory)
 
+    print_index(term_index)
+    print_index(doc_new_index)
+    
     save_index((term_index, doc_new_index), index_name)
