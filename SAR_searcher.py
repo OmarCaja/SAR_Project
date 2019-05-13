@@ -14,6 +14,7 @@ import re
 import json
 import os
 import pickle
+import math
 
 term_index = {}
 doc_index = {}
@@ -124,7 +125,71 @@ def opNOT(l):
         res.append(doc[j])
         j+=1
     return res
-         
+
+
+#query:una lista donde contiene los terminos
+#index: indice del termino donde contiene[term1: [(docid,frec),....]],si es global,cambiar el nombre al global y quitar el parametro
+#lista: lista resultado donde contiene docid
+#peso que usamos es lnc.ltc(lo mismo que la trasparencia de teoria)
+#devuelve una lista de lista,tiene siguiente formato
+#[[docid,peso],[docid,peso]...]ordenado de mayor a menor
+def ranking(query,index,lista):
+    res = list()
+    queryWeight = dict()
+    docWeight = dict()
+    res = dict()
+    #obtener frecuencia de cada termino del query
+    for term in query:
+        queryWeight[term] = query.get(term,0)+1
+    #inicializar docWeight
+    for doc in lista:
+        docWeight[doc] = dict()
+    #calcular w de cada termino para cada doc y query
+    for term in queryWeight.keys():
+        f = queryWeight[term]
+        tf = 1+math.log(f,10)
+        df = len(index.get(term,list()))
+        idf = math.log(len(doc_index)/df,10)
+        queryWeight[term] = idf * tf
+        for doc in lista:
+            f = index[term].get(doc,0)
+            if(f == 0):
+                docWeight[doc][term] = 0
+                continue
+            tf = 1+math.log(f,10)
+            docWeight[doc][term] = tf
+
+    #normalizar query
+    wTotal = 0
+    for w in queryWeight:
+        wTotal+= math.pow(w,2)
+    wTotal =  math.sqrt(wTotal)
+    for term in queryWeight.keys():
+        queryWeight[term] /= wTotal
+    #normalizar doc y calcula la puntuación
+    for doc in docWeight:
+        wTotal = 0
+        for w in docWeight[doc]:
+            wTotal+= math.pow(w,2)
+        wTotal =  math.sqrt(wTotal)
+        for term in docWeight[doc].keys():
+            docWeight[doc][term] /= wTotal
+        for term in queryWeight.keys():
+            res[doc]=res.get(term,0)+queryWeight[term]*docWeight[doc][term]
+    return sort_by_value(res)
+    
+def sort_by_value(d): 
+    items=d.items() 
+    backitems=[[v[1],v[0]] for v in items] 
+    backitems.sort() 
+    return [ [backitems[i][1],backitems[i][0]] for i in range(0,len(backitems))]
+
+
+
+
+
+
+
 
 operators = {
     'AND': 2, 
