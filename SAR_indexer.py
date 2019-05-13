@@ -36,6 +36,11 @@ def clean_text(text):
     return clean_re.sub(' ', text)
 
 
+def lowercase_text(text):
+
+    return text.lower()
+
+
 def get_doc_id():
 
     return doc_id
@@ -112,6 +117,7 @@ def index_value_from_json(json_data, key, file_path):
 
         value = new[key]
         value = clean_text(value)
+        value = lowercase_text(value)
         value_list = value.split()
 
         for word in value_list:
