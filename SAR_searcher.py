@@ -217,7 +217,7 @@ def search(query):
             opres = opOR(stack.pop(0), stack.pop(0))
             stack.insert(0, opres)
         else:
-            stack.insert(0, article_index.get(item,[]).keys())
+            stack.insert(0, article_index.get(item,{}).keys())
             query_terms.append(item.lower())
     return ranking(query_terms, stack.pop(0))
 
