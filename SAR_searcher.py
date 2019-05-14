@@ -181,7 +181,7 @@ def load_index(index_file):
         global date_index
         global summary_index
         global doc_news_index
-        (article_index, title_index, keywords_index, date_index, summary_index, doc_news_index) = indeces
+        (article_index, title_index, keyword_index, date_index, summary_index, doc_news_index) = indeces
             
 
 
@@ -234,12 +234,12 @@ def search(query):
             (terms, posting) = get_posting_list(item.lower())
             stack.insert(0, posting)
             query_terms.append(terms)
-        query_terms = [ term for sublist in query_terms for term in sublist]
+    query_terms = [ term for sublist in query_terms for term in sublist]
     return ranking(query_terms, stack.pop(0))
 
 def get_posting_list(item):
     terms = []
-    if (re.match(r':', item)):
+    if (item.rfind(":") != -1):
         dict = item.split(":")[0]
         term = item.split(":")[1]
         if (dict == 'title'):
