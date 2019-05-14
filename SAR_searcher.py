@@ -302,7 +302,7 @@ def show_result(lista):
                 if(i >= 100):
                     break
                 contenido+=c
-            print(c)
+            print(contenido)
     else:
         i = 0
         for art in lista:
