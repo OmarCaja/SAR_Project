@@ -124,7 +124,7 @@ def ranking(query,lista):
         tf = 1.0 + math.log(f,10)
         df = len(article_index.get(term,list()))
         idf = math.log(float(len(doc_index))/df, 10.0)
-        queryWeight[term] = idf * tf
+        queryWeight[term] = tf
         for doc in lista:
             f = article_index[term].get(doc, 0)
             if(f == 0):
@@ -227,6 +227,7 @@ def search(query):
             (terms, posting) = get_posting_list(item.lower())
             stack.insert(0, posting)
             query_terms.append(terms)
+        query_terms = [ term for sublist in query_terms for term in sublist]
     return ranking(query_terms, stack.pop(0))
 
 def get_posting_list(item):
