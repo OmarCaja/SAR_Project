@@ -262,7 +262,8 @@ if __name__ == "__main__":
 
     index_files_from_directory(docs_directory)
 
-    """print_index(term_index)
+    print_index(term_index)
+    """
     print_index(doc_new_index)
     print_index(title_index)
     print_index(summary_index)
@@ -270,4 +271,4 @@ if __name__ == "__main__":
     print_index(date_index)"""
     
     
-    save_index((term_index, doc_new_index), index_name)
+    save_index((title_index, summary_index, term_index, keywords_index, date_index, doc_new_index), index_name)
