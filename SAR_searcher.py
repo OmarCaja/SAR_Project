@@ -17,7 +17,7 @@ import pickle
 import math
 
 article_index = {}
-doc_index = {}
+doc_news_index = {}
 title_index = {}
 summary_index = {}
 keyword_index = {}
@@ -43,7 +43,7 @@ def opAND(list1,list2):
             res.append(list1[i])
             i+=1
             j+=1
-        elif list1[i]< list2[j]:
+        elif list1[i] < list2[j]:
             i+=1
         else:
             j+=1
@@ -58,7 +58,7 @@ def opOR(list1,list2):
             res.append(list1[i])
             i+=1
             j+=1
-        elif list1[i]< list2[j]:
+        elif list1[i] < list2[j]:
             res.append(list1[i])
             i+=1
         else:
@@ -80,7 +80,7 @@ def opOR(list1,list2):
 def opNOT(lista):
     i = 0
     j = 0
-    doc = list(doc_index.keys())
+    doc = list(doc_news_index.keys())
     res = []
     while i < len(lista):
         if doc[j] == lista[i]:
@@ -124,7 +124,7 @@ def ranking(query,lista):
         tf = 1.0 + math.log(f,10)
         df = len(article_index.get(term,list()))
         if (df != 0):
-            idf = math.log(float(len(doc_index))/df, 10.0)
+            idf = math.log(float(len(doc_news_index))/df, 10.0)
         else:
             idf = 0
         queryWeight[term] = idf * tf
@@ -176,12 +176,12 @@ def load_index(index_file):
     with open(index_file, "rb") as fh:
         indeces = pickle.load(fh)
         global article_index
-        global doc_index
         global title_index
-        global date_index
         global keyword_index
+        global date_index
         global summary_index
-        (title_index, summary_index, article_index, keywords_index, date_index, doc_index) = indeces
+        global doc_news_index
+        (article_index, title_index, keywords_index, date_index, summary_index, doc_news_index) = indeces
             
 
 
@@ -272,7 +272,7 @@ def search_and_print(text):
 def get_doc_info(lista):
     res = []
     for doc in lista:
-        obj  = doc_index[doc[0]]
+        obj  = doc_news_index[doc[0]]
         documento = get_json_data(obj[0])
         for art in documento:
             if(art["id"] == obj[1]):
