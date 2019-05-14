@@ -20,6 +20,13 @@ indexes = {}
 article_searched = False
 query_terms = []
 
+clean_re = re.compile('\\W+')
+
+
+def clean_text(text):
+
+    return clean_re.sub(' ', text)
+
 def load_json(filename):
     with open(filename) as fh:
         obj = json.load(fh)
@@ -326,8 +333,30 @@ def show_result(lista):
     print("Noticias recuperadas: ", n)
 
 def get_snippet(article):
+    res = ""
+    frase = ""
+    queryDict = dict()
+    art = clean_text(article)
     for term in query_terms:
-        return ""
+        queryDict[term.lower()] = True
+    i = 0
+    art = art.lower()
+    art = art.split()
+    for term in art:
+        if(queryDict.get(term,False)):
+            queryDict[term] = False
+            frase = ""
+            for j in range(20):
+                k = i+(j-10)
+                if(k >= 0 and k < len(art)):
+                    frase+=art[k]
+                    frase+=" "
+            frase+="\n"
+            res += frase
+        i+=1
+    return res
+    
+            
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
