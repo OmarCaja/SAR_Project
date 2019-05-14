@@ -218,7 +218,7 @@ def search(query):
             stack.insert(0, opres)
         else:
             stack.insert(0, article_index.get(item,[]).keys())
-            query_terms.append(item)
+            query_terms.append(item.lower())
     return ranking(query_terms, stack.pop(0))
 
 def search_and_print(text):
