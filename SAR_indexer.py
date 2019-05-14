@@ -16,25 +16,26 @@ import pickle
 import re
 import json
 
-term_index = {}
-doc_new_index = {}
-date_index = {}
-summary_index = {}
+
+doc_news_index = {}
+news_counter = 0
+
+article_index = {}
 title_index = {}
 keywords_index = {}
+date_index = {}
+summary_index = {}
 
-doc_new_index_save_name = 'doc_new_index'
+json_keys_indexes = [('article', article_index), 
+                     ('title', title_index), 
+                     ('keywords', keywords_index), 
+                     ('date', date_index), 
+                     ('summary', summary_index)]
 
-doc_id = 0
-new_pos_in_doc = 0
-doc_id_news_id_separator = '_'
+key_pos = 0
+index_pos = 1
 
-json_new_article = 'article'
 json_new_id = 'id'
-json_new_title= 'title'
-json_new_summary= 'summary'
-json_new_keywords= 'keywords'
-json_new_date= 'date'
 
 clean_re = re.compile('\\W+')
 
@@ -49,37 +50,20 @@ def lowercase_text(text):
     return text.lower()
 
 
-def get_doc_id():
+def get_news_counter():
 
-    return doc_id
-
-
-def increase_doc_id():
-
-    global doc_id
-    doc_id += 1
+    return news_counter;
 
 
-def get_new_pos_in_doc():
+def increase_news_counter():
 
-    return new_pos_in_doc
-
-
-def increase_new_pos_id():
-
-    global new_pos_in_doc
-    new_pos_in_doc += 1
-
-
-def reset_new_pos_in_doc():
-
-    global new_pos_in_doc
-    new_pos_in_doc = 0
+    global news_counter
+    news_counter += 1
 
 
 def get_new_key():
 
-    return str(get_doc_id()) + doc_id_news_id_separator + str(get_new_pos_in_doc())
+    return get_news_counter()
 
 
 def get_json_data(doc_name):
@@ -89,15 +73,15 @@ def get_json_data(doc_name):
         return json.load(json_file)
 
 
-def index_word_values(word):
+def index_word(word, index):
 
-    dict_values = term_index.get(word)
+    dict_values = index.get(word)
 
     if dict_values == None:
 
         dict_values = {}
 
-        term_index[word] = dict_values
+        index[word] = dict_values
 
     if dict_values.get(get_new_key(), 0) == 0:
 
@@ -106,116 +90,36 @@ def index_word_values(word):
     else:
 
         dict_values[get_new_key()] = dict_values.get(get_new_key()) + 1 
-
-def index_word_summary(word):
-    
-    dict_values = summary_index.get(word)
-
-    if dict_values == None:
-
-        dict_values = {}
-
-        summary_index[word] = dict_values
-
-    if dict_values.get(get_new_key(), 0) == 0:
-
-        dict_values[get_new_key()] = 1
-
-    else:
-
-        dict_values[get_new_key()] = dict_values.get(get_new_key()) + 1 
-   
-
-def index_word_keywords(word):
-    
-    dict_values = keywords_index.get(word)
-
-    if dict_values == None:
-
-        dict_values = {}
-
-        keywords_index[word] = dict_values
-
-    if dict_values.get(get_new_key(), 0) == 0:
-
-        dict_values[get_new_key()] = 1
-
-    else:
-
-        dict_values[get_new_key()] = dict_values.get(get_new_key()) + 1 
-        
-        
-def index_word_title(word):
-    
-    dict_values = title_index.get(word)
-
-    if dict_values == None:
-
-        dict_values = {}
-
-        title_index[word] = dict_values
-
-    if dict_values.get(get_new_key(), 0) == 0:
-
-        dict_values[get_new_key()] = 1
-
-    else:
-
-        dict_values[get_new_key()] = dict_values.get(get_new_key()) + 1 
-    
-def index_word_date(word):
-    
-    dict_values = date_index.get(word)
-
-    if dict_values == None:
-
-        dict_values = {}
-
-        date_index[word] = dict_values
-
-    if dict_values.get(get_new_key(), 0) == 0:
-
-        dict_values[get_new_key()] = 1
-
-    else:
-
-        dict_values[get_new_key()] = dict_values.get(get_new_key()) + 1    
-    
 
 
 def index_doc_new(file_path, new_id):
 
-    value = doc_new_index.get(get_new_key())
+    value = doc_news_index.get(get_new_key())
 
     if value == None:
 
         value = (file_path, new_id)
-        doc_new_index[get_new_key()] = value
+        doc_news_index[get_new_key()] = value
 
 
-def index_value_from_json(json_data, key, file_path):
+def index_value_from_json(json_data, file_path):
 
     for new in json_data:
 
         index_doc_new(file_path, new[json_new_id])
-        value = new[key]
-        value = clean_text(value)
-        value = lowercase_text(value)
-        value_list = value.split()
-        for word in value_list:
-            if key==json_new_article:
-                index_word_values(word)
-            if key==json_new_title:
-                index_word_title(word)
-            if key==json_new_keywords:
-                index_word_keywords(word)
-            if key==json_new_summary:
-                index_word_summary(word)
-            if key==json_new_date:
-                index_word_date(word)
 
+        for key_index in json_keys_indexes:
 
-        increase_new_pos_id()
+            value = new[key_index[key_pos]]
+            value = clean_text(value)
+            value = lowercase_text(value)
+            value_list = value.split()
+
+            for word in value_list:
+
+                index_word(word, key_index[index_pos])
+    
+        increase_news_counter()
 
 
 def index_files_from_directory(directory):
@@ -227,14 +131,7 @@ def index_files_from_directory(directory):
             file_path = os.path.join(subdir, file)
 
             json_data = get_json_data(file_path)
-            index_value_from_json(json_data, json_new_article, file_path)
-            index_value_from_json(json_data, json_new_title, file_path)
-            index_value_from_json(json_data, json_new_summary, file_path)
-            index_value_from_json(json_data, json_new_keywords, file_path)
-            index_value_from_json(json_data, json_new_date, file_path)
-
-            reset_new_pos_in_doc()
-            increase_doc_id()
+            index_value_from_json(json_data, file_path)
 
 
 def print_index(index):
@@ -262,13 +159,11 @@ if __name__ == "__main__":
 
     index_files_from_directory(docs_directory)
 
-    print_index(term_index)
-    """
-    print_index(doc_new_index)
+    print_index(article_index)
     print_index(title_index)
-    print_index(summary_index)
     print_index(keywords_index)
-    print_index(date_index)"""
+    print_index(date_index)
+    print_index(summary_index)
+    print_index(doc_news_index)
     
-    
-    save_index((title_index, summary_index, term_index, keywords_index, date_index, doc_new_index), index_name)
+    save_index((article_index, title_index, keywords_index, date_index, summary_index, doc_news_index), index_name)
