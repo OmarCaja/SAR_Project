@@ -73,13 +73,14 @@ def get_json_data(doc_name):
         return json.load(json_file)
 
 
-def index_word(word, index):
+def index_word(word, index, pos):
 
-    
+    positionlist=[]
     index[word] = index.get(word, {})
-
-    dict_values = index.get(word)
-    dict_values[get_new_key()] = dict_values.get(get_new_key(), 0) + 1
+    dict_values = (index.get(word))
+    positionlist=dict_values.get(get_new_key(), positionlist)
+    positionlist.append(pos)
+    dict_values[get_new_key()] = dict_values.get(get_new_key(), positionlist)
 
 
 def index_doc_new(file_path, new_id):
@@ -104,10 +105,13 @@ def index_value_from_json(json_data, file_path):
             value = clean_text(value)
             value = lowercase_text(value)
             value_list = value.split()
+            pos=0
 
             for word in value_list:
 
-                index_word(word, key_index[index_pos])
+                index_word(word, key_index[index_pos],pos)
+                pos=pos+1
+                
     
         increase_news_counter()
 
