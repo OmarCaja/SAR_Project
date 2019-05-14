@@ -245,7 +245,7 @@ def get_posting_list(item):
         if (re.match(r'^"', term)):
             term_list = re.sub(r'"', " ", item).split()
             terms.append(term_list)
-            sol_dict = positional_search(term_list)
+            sol_dict = positional_search(term_list, dict)
         else:
             article_searched = term == "article"
             sol_dict = indexes.get(dict, {}).get(term, {}).keys()
@@ -255,14 +255,32 @@ def get_posting_list(item):
         article_searched = True
         term_list = re.sub(r'"', " ", item).split()
         terms.append(term_list)
-        sol_dict = positional_search(term_list)
+        sol_dict = positional_search(term_list, "article")
     else:
         article_searched = True
         sol_dict = indexes.get("article", {}).get(item,{}).keys()
         terms.append(item)
     return (terms, list(sol_dict))
 
-def positional_search(term_lis):
+def positional_search(term_list, dict):
+    res = {}
+    index = indexes.get(dict, {})
+    doc_positions = []
+    for term in term_list:
+        positions = index.get(term, {})[1]
+        doc_positions.append(positions)
+    
+    i = 1
+    j = 0
+    for pos in doc_positions[0]:
+        for pos2 in doc_positions[i]:
+            if pos > doc_positions[i][j]:
+                j = 0
+                
+            if pos == doc_positions[i][j] + 1:
+                i +=
+            if i < len(doc_positions):
+                i += 1
 
     return {}
 
