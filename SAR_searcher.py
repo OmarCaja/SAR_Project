@@ -296,13 +296,16 @@ def show_result(lista):
             print("fecha: ",art[0]["date"])
             print("titulo: ",art[0]["title"])
             print("keywords: ",art[0]["keywords"])
-            contenido = ""
+            text = ""
             i = 0
-            for c in art[0]["article"]:
+            contenido = art[0]["article"].split()
+            for c in contenido:
                 if(i >= 100):
                     break
-                contenido+=c
-            print(contenido)
+                i+=1
+                text+=c
+                text+=" "
+            print(text)
     else:
         i = 0
         for art in lista:
