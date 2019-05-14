@@ -77,13 +77,13 @@ def opOR(list1,list2):
 
 
 #param: num = numero de docid
-def opNOT(list):
+def opNOT(lista):
     i = 0
     j = 0
-    doc = doc_index.keys()
+    doc = list(doc_index.keys())
     res = []
-    while i < len(list):
-        if doc[j] == list[i]:
+    while i < len(lista):
+        if doc[j] == lista[i]:
             j+=1
             i+=1
         elif j < i:
@@ -100,7 +100,7 @@ def opNOT(list):
 def preproces_query(query):
     for quoted_part in re.findall(r'\"(.+?)\"', query):
         query = query.replace(quoted_part, quoted_part.replace(" ", "\""))
-    query = re.sub(r' +', " AND ", query)
+    #query = re.sub(r' +', " AND ", query)
     return query
 
 #query:una lista donde contiene los terminos
@@ -140,7 +140,8 @@ def ranking(query,lista):
         wTotal += math.pow(w,2.0)
     wTotal =  math.sqrt(wTotal)
     for term in queryWeight.keys():
-        queryWeight[term] /= wTotal
+        if(wTotal != 0):
+            queryWeight[term] /= wTotal
     #normalizar doc y calcula la puntuacion
     for doc in docWeight:
         wTotal = 0
@@ -148,7 +149,8 @@ def ranking(query,lista):
             wTotal+= math.pow(w,2.0)
         wTotal =  math.sqrt(wTotal)
         for term in docWeight[doc].keys():
-            docWeight[doc][term] /= wTotal
+            if(wTotal != 0):
+	            docWeight[doc][term] /= wTotal
         for term in queryWeight.keys():
             res[doc] = queryWeight[term] * docWeight[doc][term]
     return sort_by_value(res)
@@ -223,9 +225,12 @@ def search(query):
             opres = opOR(stack.pop(0), stack.pop(0))
             stack.insert(0, opres)
         else:
-            stack.insert(0, article_index.get(item,{}).keys())
+            stack.insert(0, get_posting_list(item))
             query_terms.append(item.lower())
     return ranking(query_terms, stack.pop(0))
+
+def get_posting_list(item):
+    return list(article_index.get(item,{}).keys())
 
 def search_and_print(text):
         query = preproces_query(text)
@@ -294,7 +299,7 @@ if __name__ == "__main__":
         search_and_print(args.q)
     else:
         while True:
-            query = raw_input("Introduzca una consulta: ")
+            query = input("Introduzca una consulta: ")
             if len(query) == 0:
                 break
             search_and_print(query)
