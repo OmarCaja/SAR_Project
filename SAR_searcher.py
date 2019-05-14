@@ -265,32 +265,54 @@ def get_posting_list(item):
 def positional_search(term_list, dict):
     res = {}
     index = indexes.get(dict, {})
-    doc_positions = []
+    posting_lists = []
     for term in term_list:
-        positions = index.get(term, {})[1]
-        doc_positions.append(positions)
+        posting = index.get(term, {})
+        lista = []
+        for key in posting.keys():
+            aux = []
+            aux.append(key)
+            aux.append(posting[key][1])
+            lista.append(aux)
+        posting_lists.append(lista)
     
-    pos_indexes = []
-    for i in len(doc_positions):
-        pos_indexes.append(0)
-
-        
-        
-
-
-    i = 1
-    j = 0
-    for pos in doc_positions[0]:
-        for pos2 in doc_positions[i]:
-            if pos > doc_positions[i][j]:
-                j = 0
-                
-            if pos == doc_positions[i][j] + 1:
-                i +=
-            if i < len(doc_positions):
-                i += 1
+    positional_intersecction(posting_lists[0], posting_lists[1])
 
     return {}
+
+def positional_intersecction(list1, list2):
+    result = []
+    k = 1
+    i = 0
+    j = 0 
+    while (i < len(list1) and j < len(list2)):
+        if (list1[i][0] == list2[j][0]):
+            aux_list = []
+            pp1 = list1[i][1]
+            pp2 = list2[j][1]
+            for pos_pp1 in pp1:
+                for pos_pp2 in pp2:
+                    if (abs(pos_pp1 - pos_pp2) <= k):
+                        aux_list.append(pos_pp2)
+                    elif pos_pp2 > pos_pp1:
+                        break
+                while ((len(aux_list) != 0) and (abs(aux_list[0] - pos_pp1) > k)):
+                    aux_list.pop(0)
+                for ps in aux_list:
+                    result.append([list1[i][0], pos_pp1, ps])
+            i += 1
+            j += 1
+        else:
+            
+            if list1[i][0] < list2[j][0]:
+                i += 1
+            else:
+                j += 1
+    return result
+
+
+
+
 
 def search_and_print(text):
         query = preproces_query(text)
