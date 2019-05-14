@@ -81,7 +81,7 @@ def opNOT(lista):
         if doc[j] == lista[i]:
             j+=1
             i+=1
-        elif j < i:
+        elif doc[j] < lista[i]:
             res.append(doc[j])
             j+=1
         else:
@@ -243,7 +243,7 @@ def get_posting_list(item):
     if (item.rfind(":") != -1):
         dict = item.split(":")[0]
         term = item.split(":")[1]
-        
+
         if (re.match(r'^"', term)):
             term_list = re.sub(r'"', " ", item).split()
             terms.append(term_list)
