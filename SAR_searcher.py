@@ -270,6 +270,15 @@ def positional_search(term_list, dict):
         positions = index.get(term, {})[1]
         doc_positions.append(positions)
     
+    pos_indexes = []
+    for i in len(doc_positions):
+        pos_indexes.append(0)
+    
+    i = 0
+    while (i < len(pos_indexes) - 1):
+        
+
+
     i = 1
     j = 0
     for pos in doc_positions[0]:
