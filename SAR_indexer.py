@@ -18,7 +18,7 @@ import json
 
 
 doc_news_index = {}
-news_counter = 0
+news_counter = 1
 
 article_index = {}
 title_index = {}
@@ -75,21 +75,11 @@ def get_json_data(doc_name):
 
 def index_word(word, index):
 
+    
+    index[word] = index.get(word, {})
+
     dict_values = index.get(word)
-
-    if dict_values == None:
-
-        dict_values = {}
-
-        index[word] = dict_values
-
-    if dict_values.get(get_new_key(), 0) == 0:
-
-        dict_values[get_new_key()] = 1
-
-    else:
-
-        dict_values[get_new_key()] = dict_values.get(get_new_key()) + 1 
+    dict_values[get_new_key()] = dict_values.get(get_new_key(), 0) + 1
 
 
 def index_doc_new(file_path, new_id):
