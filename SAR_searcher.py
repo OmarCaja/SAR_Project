@@ -261,36 +261,38 @@ def search_and_print(text):
         res = get_doc_info(doc_list)
         show_result(res)
 
-#pasar una lista con doc_id,y un num indica cuando doc quieres recuperar
-#devuelve una lista que estan dato json del num primer doc_id
+#pasar una lista de [doc_id,puntuacion](obtenida de la función ranking()),y un num indica cuando doc quieres recuperar
+#devuelve una lista de [art,puntuacion]
 def get_doc_info(lista):
     res = []
     for doc in lista:
-        obj  = doc_index[doc]
+        obj  = doc_index[doc[0]]
         documento = get_json_data(obj[0])
         for art in documento:
             if(art["id"] == obj[1]):
-                res.append(art)
+                res.append([art,doc[1]])
                 break
     return res
 
-#pasa la lista obtenida de la funcion get_doc_info
+#pasa la lista obtenida de la funcion get_doc_info [art,puntuacion]
 def show_result(lista):
     n = len(lista)
     if(n <= 2):
         for art in lista:
-            print("fecha: ",art["date"])
-            print("titulo: ",art["title"])
-            print("keywords: ",art["keywords"])
-            print("articulo: ",art["article"])
+            print("puntuacion: ",art[1])
+            print("fecha: ",art[0]["date"])
+            print("titulo: ",art[0]["title"])
+            print("keywords: ",art[0]["keywords"])
+            print("articulo: ",art[0]["article"])
     elif(n<=5):
         for art in lista:
-            print("fecha: ",art["date"])
-            print("titulo: ",art["title"])
-            print("keywords: ",art["keywords"])
+            print("puntuacion: ",art[1])
+            print("fecha: ",art[0]["date"])
+            print("titulo: ",art[0]["title"])
+            print("keywords: ",art[0]["keywords"])
             contenido = ""
             i = 0
-            for c in art["article"]:
+            for c in art[0]["article"]:
                 if(i >= 100):
                     break
                 contenido+=c
@@ -300,7 +302,7 @@ def show_result(lista):
         for art in lista:
             if(i >= 10):
                 break
-            print("fecha: ",art["date"],"   titulo: ",art["title"],"   keywords: ",art["keywords"])
+            print("puntuacion",art[1],"   fecha: ",art[0]["date"],"   titulo: ",art[0]["title"],"   keywords: ",art[0]["keywords"])
     print(n)
 
 
