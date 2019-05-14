@@ -135,7 +135,7 @@ def ranking(query,lista):
             idf = 0
         queryWeight[term] = idf * tf
         for doc in lista:
-            f = article_index[term].get(doc, 0)
+            f = article_index.get(term,dict()).get(doc, 0)
             if f != 0:
                 f = f[0]
             if(f == 0):
@@ -345,6 +345,7 @@ def get_snippet(article):
     for term in art:
         if(queryDict.get(term,False)):
             queryDict[term] = False
+            frase = ""
             for j in range(20):
                 k = i+(j-10)
                 if(k >= 0 and k < len(art)):
