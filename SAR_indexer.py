@@ -100,16 +100,14 @@ def index_value_from_json(json_data, file_path):
         index_doc_new(file_path, new[json_new_id])
 
         for key_index in json_keys_indexes:
-
             value = new[key_index[key_pos]]
-            if key_index!='date':
+            if key_index[index_pos]!=date_index:
                 value = clean_text(value)
             value = lowercase_text(value)
             value_list = value.split()
             pos=0
 
             for word in value_list:
-
                 index_word(word, key_index[index_pos],pos)
                 pos=pos+1
                 
