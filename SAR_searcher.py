@@ -143,23 +143,17 @@ def ranking(query,lista):
     for term in queryWeight.keys():
         if(wTotal != 0):
             queryWeight[term] /= wTotal
-    #normalizar doc y calcula la puntuacion
+    #calcula la puntuacion
     for doc in docWeight:
-        wTotal = 0
-        for w in docWeight[doc].values():
-            wTotal+= math.pow(w,2.0)
-        wTotal =  math.sqrt(wTotal)
-        for term in docWeight[doc].keys():
-            if(wTotal != 0):
-	            docWeight[doc][term] /= wTotal
         for term in queryWeight.keys():
-            res[doc] = queryWeight[term] * docWeight[doc][term]
+            res[doc] =res.get(doc,0) + queryWeight[term] * docWeight[doc][term]
+
     return sort_by_value(res)
     
 def sort_by_value(d): 
     items=d.items() 
     backitems=[[v[1],v[0]] for v in items] 
-    backitems.sort() 
+    backitems.sort(reverse=True) 
     return [ [backitems[i][1], backitems[i][0]] for i in range(0,len(backitems))]
 
 
@@ -312,10 +306,11 @@ def show_result(lista):
             
             if (not article_searched):
                 i = 0
-                for c in art[0]["article"]:
+                for c in art[0]["article"].split():
                     if(i >= 100):
                         break
                     contenido += c
+                    contenido += " "
                     i += 1
         
             print(contenido, "\n")
