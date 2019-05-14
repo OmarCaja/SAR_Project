@@ -26,14 +26,15 @@ keywords_index = {}
 date_index = {}
 summary_index = {}
 
-json_keys_indexes = [('article', article_index), 
-                     ('title', title_index), 
-                     ('keywords', keywords_index), 
-                     ('date', date_index), 
+json_keys_indexes = [('article', article_index),
+                     ('title', title_index),
+                     ('keywords', keywords_index),
+                     ('date', date_index),
                      ('summary', summary_index)]
 
 key_pos = 0
 index_pos = 1
+date_pos = 3
 
 json_new_id = 'id'
 
@@ -52,7 +53,7 @@ def lowercase_text(text):
 
 def get_news_counter():
 
-    return news_counter;
+    return news_counter
 
 
 def increase_news_counter():
@@ -73,14 +74,12 @@ def get_json_data(doc_name):
         return json.load(json_file)
 
 
-def index_word(word, index, pos):
+def index_word(word, index):
 
-    positionlist=[]
     index[word] = index.get(word, {})
-    dict_values = (index.get(word))
-    positionlist=dict_values.get(get_new_key(), positionlist)
-    positionlist.append(pos)
-    dict_values[get_new_key()] = dict_values.get(get_new_key(), positionlist)
+
+    dict_values = index.get(word)
+    dict_values[get_new_key()] = dict_values.get(get_new_key(), 0) + 1
 
 
 def index_doc_new(file_path, new_id):
@@ -100,18 +99,20 @@ def index_value_from_json(json_data, file_path):
         index_doc_new(file_path, new[json_new_id])
 
         for key_index in json_keys_indexes:
+
             value = new[key_index[key_pos]]
-            if key_index[index_pos]!=date_index:
+
+            if key_index[key_pos] != json_keys_indexes[date_pos][key_pos]:
+
                 value = clean_text(value)
+
             value = lowercase_text(value)
             value_list = value.split()
-            pos=0
 
             for word in value_list:
-                index_word(word, key_index[index_pos],pos)
-                pos=pos+1
-                
-    
+
+                index_word(word, key_index[index_pos])
+
         increase_news_counter()
 
 
@@ -158,5 +159,6 @@ if __name__ == "__main__":
     print_index(date_index)
     print_index(summary_index)
     print_index(doc_news_index)
-    
-    save_index((article_index, title_index, keywords_index, date_index, summary_index, doc_news_index), index_name)
+
+    save_index((article_index, title_index, keywords_index,
+                date_index, summary_index, doc_news_index), index_name)
