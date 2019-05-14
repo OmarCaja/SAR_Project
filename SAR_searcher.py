@@ -34,12 +34,10 @@ def get_json_data(doc_name):
 
         return json.load(json_file)
 
-def opAND(posting1,posting2):
+def opAND(list1,list2):
     i = 0
     j = 0
     res = list()
-    list1 = posting1.keys()
-    list2 = posting2.keys()
     while i < len(list1) and j < len(list2):
         if list1[i] == list2[j]:
             res.append(list1[i])
@@ -51,41 +49,10 @@ def opAND(posting1,posting2):
             j+=1
     return res
 
-#por eficiencia,cuando (l1 and notl2) o (notl1 and l2) se calcula con esta funcion
-#caso = 1 (notl1 and l2)
-#caso = 2 (l1 and notl2)
-def opANDNOT(list1,list2,caso):
-    if caso == 1:
-        si = list2
-        no = list1
-    else:
-        si = list1
-        no = list2
-
-    res = []
-    i = 0
-    j = 0
-    while i < len(si) and j < len(no):
-        if si[i] == no[j]:
-            i+=1
-            j+=1
-        elif si[i] <no[j]:
-            res.append(si[i])
-            i+=1
-        else:
-            j+=1
-    while i < len(si):
-        res.append(si[i])
-        i+=1
-    return res
-
-
-def opOR(posting1,posting2):
+def opOR(list1,list2):
     i = 0
     j = 0
     res = list()
-    list1 = posting1.keys()
-    list2 = posting2.keys()
     while i < len(list1) and j < len(list2):
         if list1[i] == list2[j]:
             res.append(list1[i])
@@ -110,14 +77,13 @@ def opOR(posting1,posting2):
 
 
 #param: num = numero de docid
-def opNOT(posting):
+def opNOT(list):
     i = 0
     j = 0
     doc = doc_index.keys()
     res = []
-    lista = posting.keys()
-    while i < len(lista):
-        if doc[j] == lista[i]:
+    while i < len(list):
+        if doc[j] == list[i]:
             j+=1
             i+=1
         elif j < i:
@@ -185,7 +151,7 @@ def sort_by_value(d):
     items=d.items() 
     backitems=[[v[1],v[0]] for v in items] 
     backitems.sort() 
-    return [ backitems[i][1] for i in range(0,len(backitems))]
+    return [ [backitems[i][1], backitems[i][0]] for i in range(0,len(backitems))]
 
 
 operators = {
@@ -251,8 +217,8 @@ def search(query):
             opres = opOR(stack.pop(0), stack.pop(0))
             stack.insert(0, opres)
         else:
-            stack.insert(0, article_index.get(item,[]))
-            query_terms.append(item)
+            stack.insert(0, article_index.get(item,{}).keys())
+            query_terms.append(item.lower())
     return ranking(query_terms, stack.pop(0))
 
 def search_and_print(text):
@@ -261,7 +227,7 @@ def search_and_print(text):
         res = get_doc_info(doc_list)
         show_result(res)
 
-#pasar una lista de [doc_id,puntuacion](obtenida de la función ranking()),y un num indica cuando doc quieres recuperar
+#pasar una lista de [doc_id,puntuacion](obtenida de la funcion ranking()),y un num indica cuando doc quieres recuperar
 #devuelve una lista de [art,puntuacion]
 def get_doc_info(lista):
     res = []
