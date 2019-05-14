@@ -129,6 +129,8 @@ def ranking(query,lista):
         queryWeight[term] = idf * tf
         for doc in lista:
             f = article_index[term].get(doc, 0)
+            if f != 0:
+                f = f[0]
             if(f == 0):
                 docWeight[doc][term] = 0
                 continue
