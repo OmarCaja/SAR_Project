@@ -123,7 +123,10 @@ def ranking(query,lista):
         f = queryWeight[term]
         tf = 1.0 + math.log(f,10)
         df = len(article_index.get(term,list()))
-        idf = math.log(float(len(doc_index))/df, 10.0)
+        if (df != 0):
+            idf = math.log(float(len(doc_index))/df, 10.0)
+        else:
+            idf = 0
         queryWeight[term] = idf * tf
         for doc in lista:
             f = article_index[term].get(doc, 0)
@@ -174,7 +177,11 @@ def load_index(index_file):
         indeces = pickle.load(fh)
         global article_index
         global doc_index
-        (article_index, doc_index) = indeces
+        global title_index
+        global date_index
+        global keyword_index
+        global summary_index
+        (title_index, summary_index, article_index, keywords_index, date_index, doc_index) = indeces
             
 
 
@@ -229,7 +236,6 @@ def search(query):
     return ranking(query_terms, stack.pop(0))
 
 def get_posting_list(item):
-    
     if (re.match(r':', item)):
         dict = item.split(":")[0]
         term = item.split(":")[1]
