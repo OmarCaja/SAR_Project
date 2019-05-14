@@ -17,6 +17,8 @@ import pickle
 import math
 
 indexes = {}
+article_searched = False
+query_terms = []
 
 def load_json(filename):
     with open(filename) as fh:
@@ -220,7 +222,7 @@ def parse_query(query):
 
 def search(query):
     stack = []
-    query_terms = []
+    query_words = []
     for item in query:     
         if item == 'NOT':
             opres = opNOT(stack.pop(0))
@@ -234,11 +236,13 @@ def search(query):
         else:
             (terms, posting) = get_posting_list(item.lower())
             stack.insert(0, posting)
-            query_terms.append(terms)
-    query_terms = [ term for sublist in query_terms for term in sublist]
+            query_words.append(terms)
+    global query_terms
+    query_terms = [ term for sublist in query_words for term in sublist]
     return ranking(query_terms, stack.pop(0))
 
 def get_posting_list(item):
+    global article_searched
     terms = []
     if (item.rfind(":") != -1):
         dict = item.split(":")[0]
@@ -249,14 +253,17 @@ def get_posting_list(item):
             terms.append(term_list)
             sol_dict = positional_search(term_list)
         else:
+            article_searched = term == "article"
             sol_dict = indexes.get(dict, {}).get(term, {}).keys()
             terms.append(term)
 
     elif (re.match(r'^"', item)):
+        article_searched = True
         term_list = re.sub(r'"', " ", item).split()
         terms.append(term_list)
         sol_dict = positional_search(term_list)
     else:
+        article_searched = True
         sol_dict = indexes.get("article", {}).get(item,{}).keys()
         terms.append(item)
     return (terms, list(sol_dict))
@@ -294,29 +301,36 @@ def show_result(lista):
             print("fecha: ",art[0]["date"])
             print("titulo: ",art[0]["title"])
             print("keywords: ",art[0]["keywords"])
-            print("articulo: ",art[0]["article"])
+            print("articulo: ",art[0]["article"], "\n")
     elif(n<=5):
         for art in lista:
             print("puntuacion: ",art[1])
             print("fecha: ",art[0]["date"])
             print("titulo: ",art[0]["title"])
             print("keywords: ",art[0]["keywords"])
-            contenido = ""
-            i = 0
-            for c in art[0]["article"]:
-                if(i >= 100):
-                    break
-                contenido+=c
-            print(c)
+            contenido = get_snippet(art[0]["article"])
+            
+            if (not article_searched):
+                i = 0
+                for c in art[0]["article"]:
+                    if(i >= 100):
+                        break
+                    contenido += c
+                    i += 1
+        
+            print(contenido, "\n")
     else:
         i = 0
         for art in lista:
             if(i >= 10):
                 break
-            print("puntuacion",art[1],"   fecha: ",art[0]["date"],"   titulo: ",art[0]["title"],"   keywords: ",art[0]["keywords"])
-    print(n)
+            print("puntuacion",art[1],"   fecha: ",art[0]["date"],"   titulo: ",art[0]["title"],"   keywords: ",art[0]["keywords"],"\n")
+            i += 1
+    print("Noticias recuperadas: ", n)
 
-
+def get_snippet(article):
+    for term in query_terms:
+        return ""
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
