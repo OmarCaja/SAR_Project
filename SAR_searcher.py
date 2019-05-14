@@ -14,9 +14,14 @@ import re
 import json
 import os
 import pickle
+import math
 
-term_index = {}
+article_index = {}
 doc_index = {}
+title_index = {}
+summary_index = {}
+keyword_index = {}
+date_index = {}
 
 def load_json(filename):
     with open(filename) as fh:
@@ -29,10 +34,12 @@ def get_json_data(doc_name):
 
         return json.load(json_file)
 
-def opAND(list1,list2):
+def opAND(posting1,posting2):
     i = 0
     j = 0
     res = list()
+    list1 = posting1.keys()
+    list2 = posting2.keys()
     while i < len(list1) and j < len(list2):
         if list1[i] == list2[j]:
             res.append(list1[i])
@@ -73,10 +80,12 @@ def opANDNOT(list1,list2,caso):
     return res
 
 
-def opOR(list1,list2):
+def opOR(posting1,posting2):
     i = 0
     j = 0
     res = list()
+    list1 = posting1.keys()
+    list2 = posting2.keys()
     while i < len(list1) and j < len(list2):
         if list1[i] == list2[j]:
             res.append(list1[i])
@@ -101,11 +110,12 @@ def opOR(list1,list2):
 
 
 #param: num = numero de docid
-def opNOT(lista):
+def opNOT(posting):
     i = 0
     j = 0
     doc = doc_index.keys()
     res = []
+    lista = posting.keys()
     while i < len(lista):
         if doc[j] == lista[i]:
             j+=1
@@ -119,7 +129,64 @@ def opNOT(lista):
         res.append(doc[j])
         j+=1
     return res
-         
+
+
+#query:una lista donde contiene los terminos
+#lista: lista resultado donde contiene docid
+#peso que usamos es lnc.ltc(lo mismo que la trasparencia de teoria)
+#devuelve una lista de lista,tiene siguiente formato
+#[[docid,peso],[docid,peso]...]ordenado de mayor a menor
+def ranking(query,lista):
+    global article_index
+    queryWeight = dict()
+    docWeight = dict()
+    res = dict()
+    #obtener frecuencia de cada termino del query
+    for term in query:
+        queryWeight[term] = queryWeight.get(term, 0.0) + 1.0
+    #inicializar docWeight
+    for doc in lista:
+        docWeight[doc] = dict()
+    #calcular w de cada termino para cada doc y query
+    for term in queryWeight.keys():
+        f = queryWeight[term]
+        tf = 1.0 + math.log(f,10)
+        df = len(article_index.get(term,list()))
+        idf = math.log(float(len(doc_index))/df, 10.0)
+        queryWeight[term] = idf * tf
+        for doc in lista:
+            f = article_index[term].get(doc, 0)
+            if(f == 0):
+                docWeight[doc][term] = 0
+                continue
+            tf = 1.0 + math.log(f,10)
+            docWeight[doc][term] = tf
+
+    #normalizar query
+    wTotal = 0
+    for w in queryWeight.values():
+        wTotal += math.pow(w,2.0)
+    wTotal =  math.sqrt(wTotal)
+    for term in queryWeight.keys():
+        queryWeight[term] /= wTotal
+    #normalizar doc y calcula la puntuacion
+    for doc in docWeight:
+        wTotal = 0
+        for w in docWeight[doc].values():
+            wTotal+= math.pow(w,2.0)
+        wTotal =  math.sqrt(wTotal)
+        for term in docWeight[doc].keys():
+            docWeight[doc][term] /= wTotal
+        for term in queryWeight.keys():
+            res[doc] = queryWeight[term] * docWeight[doc][term]
+    return sort_by_value(res)
+    
+def sort_by_value(d): 
+    items=d.items() 
+    backitems=[[v[1],v[0]] for v in items] 
+    backitems.sort() 
+    return [ backitems[i][1] for i in range(0,len(backitems))]
+
 
 operators = {
     'AND': 2, 
@@ -132,9 +199,9 @@ operators = {
 def load_index(index_file):
     with open(index_file, "rb") as fh:
         indeces = pickle.load(fh)
-        global term_index
+        global article_index
         global doc_index
-        (term_index, doc_index) = indeces
+        (article_index, doc_index) = indeces
             
 
 
@@ -172,6 +239,7 @@ def parse_query(query):
 
 def search(query):
     stack = []
+    query_terms = []
     for item in query:     
         if item == 'NOT':
             opres = opNOT(stack.pop(0))
@@ -183,8 +251,9 @@ def search(query):
             opres = opOR(stack.pop(0), stack.pop(0))
             stack.insert(0, opres)
         else:
-            stack.insert(0, term_index.get(item,[]))
-    return stack.pop(0)
+            stack.insert(0, article_index.get(item,[]))
+            query_terms.append(item)
+    return ranking(query_terms, stack.pop(0))
 
 def search_and_print(text):
         parsed_query = parse_query(query)
