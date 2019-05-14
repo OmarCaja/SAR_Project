@@ -16,12 +16,7 @@ import os
 import pickle
 import math
 
-article_index = {}
-doc_news_index = {}
-title_index = {}
-summary_index = {}
-keyword_index = {}
-date_index = {}
+indexes = {}
 
 def load_json(filename):
     with open(filename) as fh:
@@ -80,7 +75,7 @@ def opOR(list1,list2):
 def opNOT(lista):
     i = 0
     j = 0
-    doc = list(doc_news_index.keys())
+    doc = list(indexes.get("docs", {}).keys())
     res = []
     while i < len(lista):
         if doc[j] == lista[i]:
@@ -108,7 +103,9 @@ def preproces_query(query):
 #devuelve una lista de lista,tiene siguiente formato
 #[[docid,peso],[docid,peso]...]ordenado de mayor a menor
 def ranking(query,lista):
-    global article_index
+    global indexes
+    article_index = indexes.get("article", {})
+    doc_news_index = indexes.get("docs", {})
     queryWeight = dict()
     docWeight = dict()
     res = dict()
@@ -175,13 +172,17 @@ operators = {
 def load_index(index_file):
     with open(index_file, "rb") as fh:
         indeces = pickle.load(fh)
-        global article_index
-        global title_index
-        global keyword_index
-        global date_index
-        global summary_index
-        global doc_news_index
         (article_index, title_index, keyword_index, date_index, summary_index, doc_news_index) = indeces
+        global indexes
+        indexes = {
+            "article" : article_index,
+            "title" : title_index,
+            "keywords" : keyword_index,
+            "date" : date_index,
+            "summary" : summary_index,
+            "docs" : doc_news_index
+        }
+
             
 
 
@@ -242,23 +243,21 @@ def get_posting_list(item):
     if (item.rfind(":") != -1):
         dict = item.split(":")[0]
         term = item.split(":")[1]
-        if (dict == 'title'):
-            sol_dict = title_index.get(term,{}).keys()
-        elif (dict == 'keywords'):
-            sol_dict = keyword_index.get(term, {}).keys()
-        elif (dict == 'date'):
-            sol_dict = date_index.get(term, {}).keys()
-        elif (dict == 'summary'):
-            sol_dict = summary_index.get(term, {}).keys()
-        elif (dict == 'article'):
-            sol_dict = article_index.get(term, {}).keys()
-        terms.append(term)
+        
+        if (re.match(r'^"', term)):
+            term_list = re.sub(r'"', " ", item).split()
+            terms.append(term_list)
+            sol_dict = positional_search(term_list)
+        else:
+            sol_dict = indexes.get(dict, {}).get(term, {}).keys()
+            terms.append(term)
+
     elif (re.match(r'^"', item)):
         term_list = re.sub(r'"', " ", item).split()
         terms.append(term_list)
         sol_dict = positional_search(term_list)
     else:
-        sol_dict = article_index.get(item,{}).keys()
+        sol_dict = indexes.get("article", {}).get(item,{}).keys()
         terms.append(item)
     return (terms, list(sol_dict))
 
@@ -278,7 +277,7 @@ def search_and_print(text):
 def get_doc_info(lista):
     res = []
     for doc in lista:
-        obj  = doc_news_index[doc[0]]
+        obj  = indexes.get("docs", {})[doc[0]]
         documento = get_json_data(obj[0])
         for art in documento:
             if(art["id"] == obj[1]):
