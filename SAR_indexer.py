@@ -102,7 +102,8 @@ def index_value_from_json(json_data, file_path):
         for key_index in json_keys_indexes:
 
             value = new[key_index[key_pos]]
-            value = clean_text(value)
+            if key_index!='date':
+                value = clean_text(value)
             value = lowercase_text(value)
             value_list = value.split()
             pos=0
