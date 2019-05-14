@@ -97,6 +97,12 @@ def opNOT(list):
     return res
 
 
+def preproces_query(query):
+    for quoted_part in re.findall(r'\"(.+?)\"', query):
+        query = query.replace(quoted_part, quoted_part.replace(" ", "\""))
+    query = re.sub(r' +', " AND ", query)
+    return query
+
 #query:una lista donde contiene los terminos
 #lista: lista resultado donde contiene docid
 #peso que usamos es lnc.ltc(lo mismo que la trasparencia de teoria)
@@ -222,7 +228,9 @@ def search(query):
     return ranking(query_terms, stack.pop(0))
 
 def search_and_print(text):
+        query = preproces_query(text)
         parsed_query = parse_query(query)
+        print(parsed_query)
         doc_list = search(parsed_query)
         res = get_doc_info(doc_list)
         show_result(res)
