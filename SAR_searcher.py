@@ -274,8 +274,8 @@ def positional_search(term_list, dict):
     for i in len(doc_positions):
         pos_indexes.append(0)
     
-    i = 0
-    while (i < len(pos_indexes) - 1):
+    for pos in doc_positions[1]:
+        
         
 
 
