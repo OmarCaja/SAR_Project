@@ -100,7 +100,6 @@ def opNOT(lista):
 def preproces_query(query):
     for quoted_part in re.findall(r'\"(.+?)\"', query):
         query = query.replace(quoted_part, quoted_part.replace(" ", "\""))
-    #query = re.sub(r' +', " AND ", query)
     return query
 
 #query:una lista donde contiene los terminos
@@ -230,12 +229,34 @@ def search(query):
     return ranking(query_terms, stack.pop(0))
 
 def get_posting_list(item):
-    return list(article_index.get(item,{}).keys())
+    
+    if (re.match(r':', item)):
+        dict = item.split(":")[0]
+        term = item.split(":")[1]
+        if (dict == 'title'):
+            sol_dict = title_index.get(term,{}).keys()
+        elif (dict == 'keywords'):
+            sol_dict = keyword_index.get(term, {}).keys()
+        elif (dict == 'date'):
+            sol_dict = date_index.get(term, {}).keys()
+        elif (dict == 'summary'):
+            sol_dict = summary_index.get(term, {}).keys()
+        elif (dict == 'article'):
+            sol_dict = article_index.get(term, {}).keys()
+    elif (re.match(r'^"', item)):
+        term_list = re.sub(r'"', " ", item).split()
+        sol_dict = positional_search(term_list)
+    else:
+        sol_dict = article_index.get(item,{}).keys()
+    return list(sol_dict)
+
+def positional_search(term_lis):
+
+    return {}
 
 def search_and_print(text):
         query = preproces_query(text)
         parsed_query = parse_query(query)
-        print(parsed_query)
         doc_list = search(parsed_query)
         res = get_doc_info(doc_list)
         show_result(res)
