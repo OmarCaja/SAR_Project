@@ -231,11 +231,14 @@ def search(query):
             opres = opOR(stack.pop(0), stack.pop(0))
             stack.insert(0, opres)
         else:
-            stack.insert(0, get_posting_list(item))
-            query_terms.append(item.lower())
+            (terms, posting) = get_posting_list(item.lower())
+            stack.insert(0, posting)
+            query_terms.append(terms)
+        query_terms = [ term for sublist in query_terms for term in sublist]
     return ranking(query_terms, stack.pop(0))
 
 def get_posting_list(item):
+    terms = []
     if (re.match(r':', item)):
         dict = item.split(":")[0]
         term = item.split(":")[1]
@@ -249,12 +252,15 @@ def get_posting_list(item):
             sol_dict = summary_index.get(term, {}).keys()
         elif (dict == 'article'):
             sol_dict = article_index.get(term, {}).keys()
+        terms.append(term)
     elif (re.match(r'^"', item)):
         term_list = re.sub(r'"', " ", item).split()
+        terms.append(term_list)
         sol_dict = positional_search(term_list)
     else:
         sol_dict = article_index.get(item,{}).keys()
-    return list(sol_dict)
+        terms.append(item)
+    return (terms, list(sol_dict))
 
 def positional_search(term_lis):
 
