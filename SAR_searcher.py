@@ -263,7 +263,6 @@ def get_posting_list(item):
     return (terms, list(sol_dict))
 
 def positional_search(term_list, dict):
-    res = {}
     index = indexes.get(dict, {})
     posting_lists = []
     for term in term_list:
@@ -276,12 +275,15 @@ def positional_search(term_list, dict):
             lista.append(aux)
         posting_lists.append(lista)
     
-    positional_intersecction(posting_lists[0], posting_lists[1])
+    posting_lists.append(positional_intersecction(posting_lists.pop(0), posting_lists.pop(0)))
 
-    return {}
+    while (len(posting_lists) > 1):
+        posting_lists.append(positional_intersecction(posting_lists.pop(0), posting_lists.pop(0)))
+
+    return [list[0] for list in posting_lists.pop(0)]
 
 def positional_intersecction(list1, list2):
-    result = []
+    result = {}
     k = 1
     i = 0
     j = 0 
@@ -299,7 +301,7 @@ def positional_intersecction(list1, list2):
                 while ((len(aux_list) != 0) and (abs(aux_list[0] - pos_pp1) > k)):
                     aux_list.pop(0)
                 for ps in aux_list:
-                    result.append([list1[i][0], pos_pp1, ps])
+                    result.setdefault(list1[i][0], []).append(ps)
             i += 1
             j += 1
         else:
@@ -308,7 +310,10 @@ def positional_intersecction(list1, list2):
                 i += 1
             else:
                 j += 1
-    return result
+    
+    res = [[k, v] for k, v in result.items()]
+
+    return res
 
 
 
