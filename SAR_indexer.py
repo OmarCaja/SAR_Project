@@ -2,11 +2,20 @@
 
 '''
 Proyecto de Practicas: SAR indexer
+
 Autores:
+
 Omar Caja Garcia
 Zhihao Zhang
 Pablo Lopez Orrios
 Jose Antonio Culla de Moya
+
+Ampliaciones:
+
+query con parentesis
+multiples indices
+ordenacion de los resultados
+busqueda de terminos consecutivos
 '''
 
 import sys
@@ -137,7 +146,7 @@ def index_value_from_json(json_data, file_path):
 
 def index_files_from_directory(directory):
 
-    for subdir, dirs, files in os.walk(directory):
+    for subdir, _, files in os.walk(directory):
 
         for file in files:
 
