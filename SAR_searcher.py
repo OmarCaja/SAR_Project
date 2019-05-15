@@ -254,7 +254,7 @@ def get_posting_list(item):
         if (re.match(r'^"', term)):
             term_list = re.sub(r'"', " ", item).split()
             terms.append(term_list)
-            sol_dict = positional_search(term_list)
+            sol_dict = positional_search(term_list, dict)
         else:
             article_searched = term == "article"
             sol_dict = indexes.get(dict, {}).get(term, {}).keys()
@@ -264,16 +264,69 @@ def get_posting_list(item):
         article_searched = True
         term_list = re.sub(r'"', " ", item).split()
         terms.append(term_list)
-        sol_dict = positional_search(term_list)
+        sol_dict = positional_search(term_list, "article")
     else:
         article_searched = True
         sol_dict = indexes.get("article", {}).get(item,{}).keys()
         terms.append(item)
     return (terms, list(sol_dict))
 
-def positional_search(term_lis):
+def positional_search(term_list, dict):
+    index = indexes.get(dict, {})
+    posting_lists = []
+    for term in term_list:
+        posting = index.get(term, {})
+        lista = []
+        for key in posting.keys():
+            aux = []
+            aux.append(key)
+            aux.append(posting[key][1])
+            lista.append(aux)
+        posting_lists.append(lista)
+    
+    posting_lists.append(positional_intersecction(posting_lists.pop(0), posting_lists.pop(0)))
 
-    return {}
+    while (len(posting_lists) > 1):
+        posting_lists.append(positional_intersecction(posting_lists.pop(0), posting_lists.pop(0)))
+
+    return [list[0] for list in posting_lists.pop(0)]
+
+def positional_intersecction(list1, list2):
+    result = {}
+    k = 1
+    i = 0
+    j = 0 
+    while (i < len(list1) and j < len(list2)):
+        if (list1[i][0] == list2[j][0]):
+            aux_list = []
+            pp1 = list1[i][1]
+            pp2 = list2[j][1]
+            for pos_pp1 in pp1:
+                for pos_pp2 in pp2:
+                    if (abs(pos_pp1 - pos_pp2) <= k):
+                        aux_list.append(pos_pp2)
+                    elif pos_pp2 > pos_pp1:
+                        break
+                while ((len(aux_list) != 0) and (abs(aux_list[0] - pos_pp1) > k)):
+                    aux_list.pop(0)
+                for ps in aux_list:
+                    result.setdefault(list1[i][0], []).append(ps)
+            i += 1
+            j += 1
+        else:
+            
+            if list1[i][0] < list2[j][0]:
+                i += 1
+            else:
+                j += 1
+    
+    res = [[k, v] for k, v in result.items()]
+
+    return res
+
+
+
+
 
 def search_and_print(text):
         query = preproces_query(text)
