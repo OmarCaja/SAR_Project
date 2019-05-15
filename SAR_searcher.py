@@ -1,12 +1,20 @@
 #!/usr/bin/python3
 
 '''
-Proyecto de Practicas SAR: indexer
+Proyecto de Practicas SAR: searcher
+
 Autores:
+
 Omar Caja Garcia
 Zhihao Zhang
 Pablo Lopez Orrios
-Jose Antonio Culla de Moya 
+Jose Antonio Culla de Moya
+
+Ampliaciones:
+query con parentesis
+multiples indices
+ordenacion de los resultados
+busqueda de terminos consecutivos
 '''
 import sys
 import argparse
