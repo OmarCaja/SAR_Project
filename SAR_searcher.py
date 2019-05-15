@@ -1,12 +1,20 @@
 #!/usr/bin/python3
 
 '''
-Proyecto de Practicas SAR: indexer
+Proyecto de Practicas SAR: searcher
+
 Autores:
+
 Omar Caja Garcia
 Zhihao Zhang
 Pablo Lopez Orrios
-Jose Antonio Culla de Moya 
+Jose Antonio Culla de Moya
+
+Ampliaciones:
+query con parentesis
+multiples indices
+ordenacion de los resultados
+busqueda de terminos consecutivos
 '''
 import sys
 import argparse
@@ -16,12 +24,16 @@ import os
 import pickle
 import math
 
-article_index = {}
-doc_news_index = {}
-title_index = {}
-summary_index = {}
-keyword_index = {}
-date_index = {}
+indexes = {}
+article_searched = False
+query_terms = []
+
+clean_re = re.compile('\\W+')
+
+
+def clean_text(text):
+
+    return clean_re.sub(' ', text)
 
 def load_json(filename):
     with open(filename) as fh:
@@ -80,13 +92,13 @@ def opOR(list1,list2):
 def opNOT(lista):
     i = 0
     j = 0
-    doc = list(doc_news_index.keys())
+    doc = list(indexes.get("docs", {}).keys())
     res = []
     while i < len(lista):
         if doc[j] == lista[i]:
             j+=1
             i+=1
-        elif j < i:
+        elif doc[j] < lista[i]:
             res.append(doc[j])
             j+=1
         else:
@@ -108,7 +120,9 @@ def preproces_query(query):
 #devuelve una lista de lista,tiene siguiente formato
 #[[docid,peso],[docid,peso]...]ordenado de mayor a menor
 def ranking(query,lista):
-    global article_index
+    global indexes
+    article_index = indexes.get("article", {})
+    doc_news_index = indexes.get("docs", {})
     queryWeight = dict()
     docWeight = dict()
     res = dict()
@@ -129,7 +143,9 @@ def ranking(query,lista):
             idf = 0
         queryWeight[term] = idf * tf
         for doc in lista:
-            f = article_index[term].get(doc, 0)
+            f = article_index.get(term, {}).get(doc, 0)
+            if f != 0:
+                f = f[0]
             if(f == 0):
                 docWeight[doc][term] = 0
                 continue
@@ -169,13 +185,17 @@ operators = {
 def load_index(index_file):
     with open(index_file, "rb") as fh:
         indeces = pickle.load(fh)
-        global article_index
-        global title_index
-        global keyword_index
-        global date_index
-        global summary_index
-        global doc_news_index
-        (article_index, title_index, keywords_index, date_index, summary_index, doc_news_index) = indeces
+        (article_index, title_index, keyword_index, date_index, summary_index, doc_news_index) = indeces
+        global indexes
+        indexes = {
+            "article" : article_index,
+            "title" : title_index,
+            "keywords" : keyword_index,
+            "date" : date_index,
+            "summary" : summary_index,
+            "docs" : doc_news_index
+        }
+
             
 
 
@@ -213,7 +233,7 @@ def parse_query(query):
 
 def search(query):
     stack = []
-    query_terms = []
+    query_words = []
     for item in query:     
         if item == 'NOT':
             opres = opNOT(stack.pop(0))
@@ -227,38 +247,94 @@ def search(query):
         else:
             (terms, posting) = get_posting_list(item.lower())
             stack.insert(0, posting)
-            query_terms.append(terms)
-        query_terms = [ term for sublist in query_terms for term in sublist]
+            query_words.append(terms)
+    global query_terms
+    query_terms = [ term for sublist in query_words for term in sublist]
     return ranking(query_terms, stack.pop(0))
 
 def get_posting_list(item):
+    global article_searched
     terms = []
-    if (re.match(r':', item)):
+    if (item.rfind(":") != -1):
         dict = item.split(":")[0]
         term = item.split(":")[1]
-        if (dict == 'title'):
-            sol_dict = title_index.get(term,{}).keys()
-        elif (dict == 'keywords'):
-            sol_dict = keyword_index.get(term, {}).keys()
-        elif (dict == 'date'):
-            sol_dict = date_index.get(term, {}).keys()
-        elif (dict == 'summary'):
-            sol_dict = summary_index.get(term, {}).keys()
-        elif (dict == 'article'):
-            sol_dict = article_index.get(term, {}).keys()
-        terms.append(term)
+
+        if (re.match(r'^"', term)):
+            term_list = re.sub(r'"', " ", term).split()
+            terms = term_list
+            sol_dict = positional_search(term_list, dict)
+        else:
+            article_searched = term == "article"
+            sol_dict = indexes.get(dict, {}).get(term, {}).keys()
+            terms.append(term)
+
     elif (re.match(r'^"', item)):
+        article_searched = True
         term_list = re.sub(r'"', " ", item).split()
-        terms.append(term_list)
-        sol_dict = positional_search(term_list)
+        terms = term_list
+        sol_dict = positional_search(term_list, "article")
     else:
-        sol_dict = article_index.get(item,{}).keys()
+        article_searched = True
+        sol_dict = indexes.get("article", {}).get(item,{}).keys()
         terms.append(item)
     return (terms, list(sol_dict))
 
-def positional_search(term_lis):
+def positional_search(term_list, dict):
+    index = indexes.get(dict, {})
+    posting_lists = []
+    for term in term_list:
+        posting = index.get(term, {})
+        lista = []
+        for key in posting.keys():
+            aux = []
+            aux.append(key)
+            aux.append(posting[key][1])
+            lista.append(aux)
+        posting_lists.append(lista)
+    
+    posting_lists.insert(0, positional_intersecction(posting_lists.pop(0), posting_lists.pop(0)))
 
-    return {}
+    while (len(posting_lists) > 1):
+        posting_lists.append(positional_intersecction(posting_lists.pop(0), posting_lists.pop(0)))
+
+    return [list[0] for list in posting_lists.pop(0)]
+
+def positional_intersecction(list1, list2):
+    result = {}
+    k = 1
+    i = 0
+    j = 0 
+    while (i < len(list1) and j < len(list2)):
+        if (list1[i][0] == list2[j][0]):
+            aux_list = []
+            pp1 = list1[i][1]
+            pp2 = list2[j][1]
+            for pos_pp1 in pp1:
+                for pos_pp2 in pp2:
+                    if (abs(pos_pp1 - pos_pp2) <= k):
+                        aux_list.append(pos_pp2)
+                    elif pos_pp2 > pos_pp1:
+                        break
+                while ((len(aux_list) != 0) and (abs(aux_list[0] - pos_pp1) > k)):
+                    aux_list.pop(0)
+                for ps in aux_list:
+                    result.setdefault(list1[i][0], []).append(ps)
+            i += 1
+            j += 1
+        else:
+            
+            if list1[i][0] < list2[j][0]:
+                i += 1
+            else:
+                j += 1
+    
+    res = [[k, v] for k, v in result.items()]
+
+    return res
+
+
+
+
 
 def search_and_print(text):
         query = preproces_query(text)
@@ -272,7 +348,7 @@ def search_and_print(text):
 def get_doc_info(lista):
     res = []
     for doc in lista:
-        obj  = doc_news_index[doc[0]]
+        obj  = indexes.get("docs", {})[doc[0]]
         documento = get_json_data(obj[0])
         for art in documento:
             if(art["id"] == obj[1]):
@@ -289,32 +365,59 @@ def show_result(lista):
             print("fecha: ",art[0]["date"])
             print("titulo: ",art[0]["title"])
             print("keywords: ",art[0]["keywords"])
-            print("articulo: ",art[0]["article"])
+            print("articulo: ",art[0]["article"], "\n")
     elif(n<=5):
         for art in lista:
             print("puntuacion: ",art[1])
             print("fecha: ",art[0]["date"])
             print("titulo: ",art[0]["title"])
             print("keywords: ",art[0]["keywords"])
-            text = ""
-            i = 0
-            contenido = art[0]["article"].split()
-            for c in contenido:
-                if(i >= 100):
-                    break
-                i+=1
-                text+=c
-                text+=" "
-            print(text)
+            contenido = get_snippet(art[0]["article"])
+            
+            if (not article_searched):
+                i = 0
+                for c in art[0]["article"].split():
+                    if(i >= 100):
+                        break
+                    contenido += c
+                    contenido += " "
+                    i += 1
+        
+            print("Snippets: ", contenido, "\n")
     else:
         i = 0
         for art in lista:
             if(i >= 10):
                 break
-            print("puntuacion",art[1],"   fecha: ",art[0]["date"],"   titulo: ",art[0]["title"],"   keywords: ",art[0]["keywords"])
-    print(n)
+            print("puntuacion",art[1],"   fecha: ",art[0]["date"],"   titulo: ",art[0]["title"],"   keywords: ",art[0]["keywords"],"\n")
+            i += 1
+    print("Noticias recuperadas: ", n)
 
-
+def get_snippet(article):
+    res = ""
+    frase = ""
+    queryDict = dict()
+    art = clean_text(article)
+    for term in query_terms:
+        queryDict[term.lower()] = True
+    i = 0
+    art = art.lower()
+    art = art.split()
+    for term in art:
+        if(queryDict.get(term,False)):
+            queryDict[term] = False
+            frase = ""
+            for j in range(20):
+                k = i+(j-10)
+                if(k >= 0 and k < len(art)):
+                    frase+=art[k]
+                    frase+=" "
+            frase+="\n"
+            res += frase
+        i+=1
+    return res
+    
+            
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
