@@ -181,12 +181,5 @@ if __name__ == "__main__":
 
     index_files_from_directory(docs_directory)
 
-    """ print_index(article_index)
-    print_index(title_index)
-    print_index(keywords_index) """
-    print_index(date_index)
-    """ print_index(summary_index)
-    print_index(doc_news_index) """
-
     save_index((article_index, title_index, keywords_index,
                 date_index, summary_index, doc_news_index), index_name)
