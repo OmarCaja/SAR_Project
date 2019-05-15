@@ -383,7 +383,7 @@ def show_result(lista):
                     contenido += " "
                     i += 1
         
-            print(contenido, "\n")
+            print("Snippets: ", contenido, "\n")
     else:
         i = 0
         for art in lista:
