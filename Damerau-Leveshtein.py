@@ -2,7 +2,7 @@
 import numpy as np
 
 
-def damerau_levenshtein(p1,p2):
+def damerau_levenshtein(p1, p2):
     l1 = len(p1)
     l2 = len(p2)
     dismax = l1 + l2 + 1
@@ -31,8 +31,8 @@ def damerau_levenshtein(p1,p2):
                         if m[i - 2, j - 2] + 1 < dis:
                             dis = m[i - 2, j - 2] + 1
             m[i, j] = dis
-    return m
+    return m[l1, l2]
     
-pal1 = "abc"
-pal2 = "dbav"
+pal1 = "casa"
+pal2 = "basa"
 print(damerau_levenshtein(pal1,pal2))
