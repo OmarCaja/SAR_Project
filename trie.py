@@ -10,18 +10,18 @@ class trie:
         nodo = self.raiz.get(palabra[0],False)
         if(not nodo):
             self.numNodo += 1
-            nodo = node.trie_nodo(1, None, False,palabra[0])
+            nodo = node.trie_nodo(1, None, False,palabra[0],self.numNodo)
             self.raiz[palabra[0]] = nodo
         
         
         
         
         for letra in palabra[1:-1]:
-            self.numNodo += nodo.anadirHijo(letra, False)
+            self.numNodo += nodo.anadirHijo(letra, False,self.numNodo)
             nodo = nodo.recuperarNodo(letra)
 
         if (len(palabra) > 1):
-            self.numNodo += nodo.anadirHijo(palabra[-1], True)
+            self.numNodo += nodo.anadirHijo(palabra[-1], True,self.numNodo)
         else:
             nodo.final = True
 
