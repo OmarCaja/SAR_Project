@@ -16,9 +16,11 @@ class trie_nodo:
         nodo = self.hijos.get(letra,False)
         if(not nodo):
             self.hijos[letra] = trie_nodo(self.profundidad + 1, self, esPalabra,letra,indice+1)
+            
             return 1
+        if esPalabra :
+            nodo.final = esPalabra
         
-        nodo.final = esPalabra
         return 0
 
         
