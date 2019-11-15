@@ -53,6 +53,18 @@ class trie:
             for e in nodo.hijos.values():
                 c.append(e)
         return res 
+
+    def getNodeDict(self):
+        res = dict()
+        c = collections.deque()
+        for e in self.raiz.values():
+            c.append(e)
+        while len(c)>0:
+            nodo = c.pop()
+            res[nodo.indice] = nodo
+            for e in nodo.hijos.values():
+                c.append(e)
+        return res 
                 
 
 

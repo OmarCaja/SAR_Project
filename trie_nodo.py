@@ -26,3 +26,5 @@ class trie_nodo:
     def recuperarNodo(self, letra):
         return self.hijos[letra]
 
+    def __hash__(self):
+        return self.indice
