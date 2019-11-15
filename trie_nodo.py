@@ -3,7 +3,7 @@ class trie_nodo:
 
     
 
-    def __init__(self, profundidad, nodo_padre, final,myKey,indice):
+    def __init__(self, profundidad, nodo_padre,myKey,indice, final=False):
         self.profundidad = profundidad
         self.nodo_padre = nodo_padre
         self.final = final
@@ -12,14 +12,11 @@ class trie_nodo:
         self.indice = indice
 
 
-    def anadirHijo(self, letra, esPalabra,indice):
+    def anadirHijo(self, letra,indice):
         nodo = self.hijos.get(letra,False)
         if(not nodo):
-            self.hijos[letra] = trie_nodo(self.profundidad + 1, self, esPalabra,letra,indice+1)
-            
+            self.hijos[letra] = trie_nodo(self.profundidad + 1, self,letra,indice+1)
             return 1
-        if esPalabra :
-            nodo.final = esPalabra
         
         return 0
 
