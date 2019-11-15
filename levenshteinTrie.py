@@ -2,7 +2,7 @@ import trie
 import numpy as np
 
 
-def levenshteinTrie(p,t):
+def levenshteinTrie(p,t,tolerancia):
     lenpalabra = len(p)
     numNodo = t.getNumNodo()
     nodos = t.getAllNode()
@@ -28,7 +28,7 @@ def levenshteinTrie(p,t):
                     if(p[i-1] != n.myKey):
                         disMin +=1
                 dis[i][n.indice] = disMin
-                if(i == lenpalabra and n.final):
+                if(i == lenpalabra and n.final and disMin <= tolerancia):
                     palabra = n.myKey
                     padre = n.nodo_padre
                     while padre :
