@@ -17,10 +17,7 @@ def levenshteinTrie(p,t,tolerancia):
             else:
                 
 
-                if(n.nodo_padre):
-                    indicePadre = n.nodo_padre.indice
-                else:
-                    indicePadre = 0
+                indicePadre = n.nodo_padre.indice
 
 
                 if(n.myKey == p[i-1]):
@@ -68,10 +65,7 @@ def damareu_levenshteinTrie(p,t,tolerancia):
             else:
                 
 
-                if(n.nodo_padre):
-                    indicePadre = n.nodo_padre.indice
-                else:
-                    indicePadre = 0
+                indicePadre = n.nodo_padre.indice
 
 
                 if(n.myKey == p[i-1]):
