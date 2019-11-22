@@ -27,7 +27,7 @@ import trie as tr
 import levenshteinTrie as search_trie
 
 indexes = {}
-trie
+tries = {}
 article_searched = False
 query_terms = []
 
