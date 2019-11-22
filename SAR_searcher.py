@@ -23,8 +23,11 @@ import json
 import os
 import pickle
 import math
+import trie as tr
+import levenshteinTrie as search_trie
 
 indexes = {}
+trie
 article_searched = False
 query_terms = []
 
@@ -245,9 +248,27 @@ def search(query):
             opres = opOR(stack.pop(0), stack.pop(0))
             stack.insert(0, opres)
         else:
-            (terms, posting) = get_posting_list(item.lower())
-            stack.insert(0, posting)
-            query_words.append(terms)
+            words = list()
+            item_with_tolerance = item.lower()
+            extract_tolerance_damerau = item_with_tolerance.split('@')
+            extract_tolerance_levenshtein = item_with_tolerance.split('%')
+            if (len(extract_tolerance_damerau) > 1):
+                search_trie.damareu_levenshteinTrie(extract_tolerance_damerau[0], trie, extract_tolerance_damerau[1])
+
+            elif (len(extract_tolerance_levenshtein) > 1):
+                search_trie.levenshteinTrie(extract_tolerance_levenshtein[0], trie, extract_tolerance_levenshtein[1])
+
+            else:
+                words.append(item.lower())
+
+            posting_completa = set()
+            for word in words:
+                (terms, posting) = get_posting_list(word)
+                posting_completa.add(posting) 
+                query_words.append(terms)
+
+            stack.insert(0, list(posting_completa))
+
     global query_terms
     query_terms = [ term for sublist in query_words for term in sublist]
     return ranking(query_terms, stack.pop(0))
@@ -257,7 +278,7 @@ def get_posting_list(item):
     terms = []
     if (item.rfind(":") != -1):
         dict = item.split(":")[0]
-        term = item.split(":")[1]
+        term = item.split(":")[1]query_terms
 
         if (re.match(r'^"', term)):
             term_list = re.sub(r'"', " ", term).split()
@@ -273,7 +294,7 @@ def get_posting_list(item):
         term_list = re.sub(r'"', " ", item).split()
         terms = term_list
         sol_dict = positional_search(term_list, "article")
-    else:
+    else:query_terms
         article_searched = True
         sol_dict = indexes.get("article", {}).get(item,{}).keys()
         terms.append(item)
@@ -286,7 +307,7 @@ def positional_search(term_list, dict):
         posting = index.get(term, {})
         lista = []
         for key in posting.keys():
-            aux = []
+            aux = []query_terms
             aux.append(key)
             aux.append(posting[key][1])
             lista.append(aux)
@@ -305,7 +326,7 @@ def positional_intersecction(list1, list2):
     i = 0
     j = 0 
     while (i < len(list1) and j < len(list2)):
-        if (list1[i][0] == list2[j][0]):
+        if (list1[i][0] == list2[j][0]):query_terms
             aux_list = []
             pp1 = list1[i][1]
             pp2 = list2[j][1]
@@ -383,7 +404,7 @@ def show_result(lista):
                     contenido += " "
                     i += 1
         
-            print("Snippets: ", contenido, "\n")
+            print("Snippets: ", contenido, "\n")query_terms
     else:
         i = 0
         for art in lista:
