@@ -31,7 +31,7 @@ def ramificacion(palabra, trie, tolerancia):
                     cola.append((letra+1,n,distancia+1))
 
             
-    return res
+    return list(res)
 
 def ramificacion_damerau(palabra, trie, tolerancia):
     cola = collections.deque()
@@ -67,4 +67,4 @@ def ramificacion_damerau(palabra, trie, tolerancia):
                     cola.append((letra+1,n,distancia,"sus"))
 
             
-    return res
+    return list(res)

@@ -43,7 +43,7 @@ def levenshteinTrie(p,t,tolerancia):
                         
                         palabra = padre.myKey + palabra
                         padre = padre.nodo_padre
-                    res.append((palabra,disMin))
+                    res.append(palabra)
     
     return res
 
@@ -97,6 +97,6 @@ def damareu_levenshteinTrie(p,t,tolerancia):
                         
                         palabra = padre.myKey + palabra
                         padre = padre.nodo_padre
-                    res.append((palabra,disMin))
+                    res.append(palabra)
     
     return res
