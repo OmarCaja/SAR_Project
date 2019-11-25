@@ -1,7 +1,7 @@
 import argparse
 
 from read_data.reader import get_words_list
-from words_distance.damerau_leveshtein import damerau_levenshtein
+from words_distance.dynamic_programming.damerau_leveshtein import damerau_levenshtein
 
 
 def compare_word_list(word_list, searched_word, max_dist):
