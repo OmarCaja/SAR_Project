@@ -1,7 +1,2 @@
-# Blacklist
-*
-
-# Whitelist
-!*.py
-!*.md
-
+.vscode
+.idea
