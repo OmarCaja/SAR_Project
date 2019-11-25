@@ -18,13 +18,11 @@ ordenacion de los resultados
 busqueda de terminos consecutivos
 '''
 
-import sys
-import os
 import argparse
+import json
+import os
 import pickle
 import re
-import json
-
 
 doc_news_index = {}
 news_counter = 1
@@ -53,44 +51,35 @@ clean_re = re.compile('\\W+')
 
 
 def clean_text(text):
-
     return clean_re.sub(' ', text)
 
 
 def lowercase_text(text):
-
     return text.lower()
 
 
 def get_news_counter():
-
     return news_counter
 
 
 def increase_news_counter():
-
     global news_counter
     news_counter += 1
 
 
 def get_new_key():
-
     return get_news_counter()
 
 
 def get_json_data(doc_name):
-
     with open(doc_name, "r") as json_file:
-
         return json.load(json_file)
 
 
 def index_word(word, index, pos):
-
     dict_values = index.get(word)
 
     if dict_values == None:
-
         dict_values = {}
 
         index[word] = dict_values
@@ -107,17 +96,14 @@ def index_word(word, index, pos):
 
 
 def index_doc_new(file_path, new_id):
-
     value = doc_news_index.get(get_new_key())
 
     if value == None:
-
         value = (file_path, new_id)
         doc_news_index[get_new_key()] = value
 
 
 def index_value_from_json(json_data, file_path):
-
     for new in json_data:
 
         index_doc_new(file_path, new[json_new_id])
@@ -127,7 +113,6 @@ def index_value_from_json(json_data, file_path):
             value = new[key_index[key_pos]]
 
             if key_index[key_pos] != json_keys_indexes[date_pos][key_pos]:
-
                 value = clean_text(value)
 
             value = lowercase_text(value)
@@ -136,7 +121,6 @@ def index_value_from_json(json_data, file_path):
             word_position = 1
 
             for word in value_list:
-
                 index_word(word, key_index[index_pos], word_position)
 
                 word_position = word_position + 1
@@ -145,11 +129,9 @@ def index_value_from_json(json_data, file_path):
 
 
 def index_files_from_directory(directory):
-
     for subdir, _, files in os.walk(directory):
 
         for file in files:
-
             file_path = os.path.join(subdir, file)
 
             json_data = get_json_data(file_path)
@@ -157,20 +139,16 @@ def index_files_from_directory(directory):
 
 
 def print_index(index):
-
     for item in index.items():
-
         print(item)
 
 
 def save_index(index, doc_name):
-
     with open(doc_name, "wb") as fh:
         pickle.dump(index, fh)
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser()
     parser.add_argument("directory", help="News directory")
     parser.add_argument("index", help="Index name")
