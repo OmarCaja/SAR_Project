@@ -1,9 +1,7 @@
-#!/usr/bin/python3
-
 import argparse
 
-from Damerau_Leveshtein import damerau_levenshtein
-from reader import get_word_list
+from read_data.reader import get_words_list
+from words_distance.damerau_leveshtein import damerau_levenshtein
 
 
 def compare_word_list(word_list, searched_word, max_dist):
@@ -13,9 +11,6 @@ def compare_word_list(word_list, searched_word, max_dist):
         dist = damerau_levenshtein(searched_word, word)
         if dist <= max_dist:
             word_distance_list[dist].add((str(dist) + ':' + word))
-
-    print(word_distance_list)
-    print(len(word_distance_list[max_dist]))
 
 
 def make_word_distance_list(max_dist):
@@ -36,5 +31,5 @@ if __name__ == "__main__":
     file_name = args.file_name
     searched_word = args.word_and_distance
 
-    word_list = get_word_list(file_name)
+    word_list = get_words_list(file_name)
     compare_word_list(word_list, searched_word, 3)
