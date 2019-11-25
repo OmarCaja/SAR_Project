@@ -22,6 +22,8 @@ def make_word_distance_list(max_dist):
     return word_distance_list
 
 
+# TODO
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("file_name", help="File name")
