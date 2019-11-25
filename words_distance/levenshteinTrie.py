@@ -1,4 +1,3 @@
-import trie
 import numpy as np
 
 
@@ -8,7 +7,7 @@ def levenshteinTrie(p,t):
     nodos = t.getAllNode()
     dis= np.empty(dtype = np.int8,shape=(lenpalabra+1,numNodo+1))
     res = list()
-        
+
     for i in range(lenpalabra+1):
         dis[i][0] = i
         for n in nodos:
@@ -32,11 +31,10 @@ def levenshteinTrie(p,t):
                     palabra = n.myKey
                     padre = n.nodo_padre
                     while padre :
-                        
+
                         palabra = padre.myKey + palabra
                         padre = padre.nodo_padre
                     res.append((palabra,disMin))
-    
+
     return res
 
-    
