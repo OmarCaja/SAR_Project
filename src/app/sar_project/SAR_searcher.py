@@ -16,15 +16,13 @@ multiples indices
 ordenacion de los resultados
 busqueda de terminos consecutivos
 '''
-import sys
 import argparse
-import re
 import json
-import os
-import pickle
 import math
 import trie as tr
 import levenshteinTrie as search_trie
+import pickle
+import re
 
 indexes = {}
 tries = {}
@@ -35,50 +33,51 @@ clean_re = re.compile('\\W+')
 
 
 def clean_text(text):
-
     return clean_re.sub(' ', text)
+
 
 def load_json(filename):
     with open(filename) as fh:
         obj = json.load(fh)
     return obj
 
+
 def get_json_data(doc_name):
-
     with open(doc_name, "r") as json_file:
-
         return json.load(json_file)
 
-def opAND(list1,list2):
+
+def opAND(list1, list2):
     i = 0
     j = 0
     res = list()
     while i < len(list1) and j < len(list2):
         if list1[i] == list2[j]:
             res.append(list1[i])
-            i+=1
-            j+=1
+            i += 1
+            j += 1
         elif list1[i] < list2[j]:
-            i+=1
+            i += 1
         else:
-            j+=1
+            j += 1
     return res
 
-def opOR(list1,list2):
+
+def opOR(list1, list2):
     i = 0
     j = 0
     res = list()
     while i < len(list1) and j < len(list2):
         if list1[i] == list2[j]:
             res.append(list1[i])
-            i+=1
-            j+=1
+            i += 1
+            j += 1
         elif list1[i] < list2[j]:
             res.append(list1[i])
-            i+=1
+            i += 1
         else:
             res.append(list2[j])
-            j+=1
+            j += 1
     if i == len(list1):
         aux = j
         aux2 = list2
@@ -87,11 +86,11 @@ def opOR(list1,list2):
         aux2 = list1
     while aux < len(aux2):
         res.append(aux2[aux])
-        aux+=1
+        aux += 1
     return res
 
 
-#param: num = numero de docid
+# param: num = numero de docid
 def opNOT(lista):
     i = 0
     j = 0
@@ -99,16 +98,16 @@ def opNOT(lista):
     res = []
     while i < len(lista):
         if doc[j] == lista[i]:
-            j+=1
-            i+=1
+            j += 1
+            i += 1
         elif doc[j] < lista[i]:
             res.append(doc[j])
-            j+=1
+            j += 1
         else:
-            i+=1
+            i += 1
     while j < len(doc):
         res.append(doc[j])
-        j+=1
+        j += 1
     return res
 
 
@@ -117,31 +116,32 @@ def preproces_query(query):
         query = query.replace(quoted_part, quoted_part.replace(" ", "\""))
     return query
 
-#query:una lista donde contiene los terminos
-#lista: lista resultado donde contiene docid
-#peso que usamos es lnc.ltc(lo mismo que la trasparencia de teoria)
-#devuelve una lista de lista,tiene siguiente formato
-#[[docid,peso],[docid,peso]...]ordenado de mayor a menor
-def ranking(query,lista):
+
+# query:una lista donde contiene los terminos
+# lista: lista resultado donde contiene docid
+# peso que usamos es lnc.ltc(lo mismo que la trasparencia de teoria)
+# devuelve una lista de lista,tiene siguiente formato
+# [[docid,peso],[docid,peso]...]ordenado de mayor a menor
+def ranking(query, lista):
     global indexes
     article_index = indexes.get("article", {})
     doc_news_index = indexes.get("docs", {})
     queryWeight = dict()
     docWeight = dict()
     res = dict()
-    #obtener frecuencia de cada termino del query
+    # obtener frecuencia de cada termino del query
     for term in query:
         queryWeight[term] = queryWeight.get(term, 0.0) + 1.0
-    #inicializar docWeight
+    # inicializar docWeight
     for doc in lista:
         docWeight[doc] = dict()
-    #calcular w de cada termino para cada doc y query
+    # calcular w de cada termino para cada doc y query
     for term in queryWeight.keys():
         f = queryWeight[term]
-        tf = 1.0 + math.log(f,10)
-        df = len(article_index.get(term,list()))
+        tf = 1.0 + math.log(f, 10)
+        df = len(article_index.get(term, list()))
         if (df != 0):
-            idf = math.log(float(len(doc_news_index))/df, 10.0)
+            idf = math.log(float(len(doc_news_index)) / df, 10.0)
         else:
             idf = 0
         queryWeight[term] = idf * tf
@@ -149,41 +149,43 @@ def ranking(query,lista):
             f = article_index.get(term, {}).get(doc, 0)
             if f != 0:
                 f = f[0]
-            if(f == 0):
+            if (f == 0):
                 docWeight[doc][term] = 0
                 continue
-            tf = 1.0 + math.log(f,10)
+            tf = 1.0 + math.log(f, 10)
             docWeight[doc][term] = tf
 
-    #normalizar query
+    # normalizar query
     wTotal = 0
     for w in queryWeight.values():
-        wTotal += math.pow(w,2.0)
-    wTotal =  math.sqrt(wTotal)
+        wTotal += math.pow(w, 2.0)
+    wTotal = math.sqrt(wTotal)
     for term in queryWeight.keys():
-        if(wTotal != 0):
+        if (wTotal != 0):
             queryWeight[term] /= wTotal
-    #calcula la puntuacion
+    # calcula la puntuacion
     for doc in docWeight:
         for term in queryWeight.keys():
-            res[doc] =res.get(doc,0) + queryWeight[term] * docWeight[doc][term]
+            res[doc] = res.get(doc, 0) + queryWeight[term] * docWeight[doc][term]
 
     return sort_by_value(res)
-    
-def sort_by_value(d): 
-    items=d.items() 
-    backitems=[[v[1],v[0]] for v in items] 
-    backitems.sort(reverse=True) 
-    return [ [backitems[i][1], backitems[i][0]] for i in range(0,len(backitems))]
+
+
+def sort_by_value(d):
+    items = d.items()
+    backitems = [[v[1], v[0]] for v in items]
+    backitems.sort(reverse=True)
+    return [[backitems[i][1], backitems[i][0]] for i in range(0, len(backitems))]
 
 
 operators = {
-    'AND': 2, 
-    'OR': 2, 
-    'NOT': 3, 
-    '(': 1, 
-    ')': 4 
-    }
+    'AND': 2,
+    'OR': 2,
+    'NOT': 3,
+    '(': 1,
+    ')': 4
+}
+
 
 def load_index(index_file):
     with open(index_file, "rb") as fh:
@@ -191,15 +193,13 @@ def load_index(index_file):
         (article_index, title_index, keyword_index, date_index, summary_index, doc_news_index) = indeces
         global indexes
         indexes = {
-            "article" : article_index,
-            "title" : title_index,
-            "keywords" : keyword_index,
-            "date" : date_index,
-            "summary" : summary_index,
-            "docs" : doc_news_index
+            "article": article_index,
+            "title": title_index,
+            "keywords": keyword_index,
+            "date": date_index,
+            "summary": summary_index,
+            "docs": doc_news_index
         }
-
-            
 
 
 def parse_query(query):
@@ -208,7 +208,7 @@ def parse_query(query):
     especial_char = re.compile(r'[\(\)]')
     query = especial_char.sub(r' \g<0> ', query)
     token_list = query.split()
-    
+
     for token in token_list:
         if operators.get(token, False) and token != ')':
             while len(stack) != 0 and token != '(' and operators[stack[0]] >= operators[token]:
@@ -234,10 +234,11 @@ def parse_query(query):
 
     return output
 
+
 def search(query):
     stack = []
     query_words = []
-    for item in query:     
+    for item in query:
         if item == 'NOT':
             opres = opNOT(stack.pop(0))
             stack.insert(0, opres)
@@ -270,8 +271,9 @@ def search(query):
             stack.insert(0, list(posting_completa))
 
     global query_terms
-    query_terms = [ term for sublist in query_words for term in sublist]
+    query_terms = [term for sublist in query_words for term in sublist]
     return ranking(query_terms, stack.pop(0))
+
 
 def get_posting_list(item):
     global article_searched
@@ -296,9 +298,10 @@ def get_posting_list(item):
         sol_dict = positional_search(term_list, "article")
     else:query_terms
         article_searched = True
-        sol_dict = indexes.get("article", {}).get(item,{}).keys()
+        sol_dict = indexes.get("article", {}).get(item, {}).keys()
         terms.append(item)
     return (terms, list(sol_dict))
+
 
 def positional_search(term_list, dict):
     index = indexes.get(dict, {})
@@ -312,7 +315,7 @@ def positional_search(term_list, dict):
             aux.append(posting[key][1])
             lista.append(aux)
         posting_lists.append(lista)
-    
+
     posting_lists.insert(0, positional_intersecction(posting_lists.pop(0), posting_lists.pop(0)))
 
     while (len(posting_lists) > 1):
@@ -320,11 +323,12 @@ def positional_search(term_list, dict):
 
     return [list[0] for list in posting_lists.pop(0)]
 
+
 def positional_intersecction(list1, list2):
     result = {}
     k = 1
     i = 0
-    j = 0 
+    j = 0
     while (i < len(list1) and j < len(list2)):
         if (list1[i][0] == list2[j][0]):query_terms
             aux_list = []
@@ -343,76 +347,77 @@ def positional_intersecction(list1, list2):
             i += 1
             j += 1
         else:
-            
+
             if list1[i][0] < list2[j][0]:
                 i += 1
             else:
                 j += 1
-    
+
     res = [[k, v] for k, v in result.items()]
 
     return res
 
 
-
-
-
 def search_and_print(text):
-        query = preproces_query(text)
-        parsed_query = parse_query(query)
-        doc_list = search(parsed_query)
-        res = get_doc_info(doc_list)
-        show_result(res)
+    query = preproces_query(text)
+    parsed_query = parse_query(query)
+    doc_list = search(parsed_query)
+    res = get_doc_info(doc_list)
+    show_result(res)
 
-#pasar una lista de [doc_id,puntuacion](obtenida de la funcion ranking()),y un num indica cuando doc quieres recuperar
-#devuelve una lista de [art,puntuacion]
+
+# pasar una lista de [doc_id,puntuacion](obtenida de la funcion ranking()),y un num indica cuando doc quieres recuperar
+# devuelve una lista de [art,puntuacion]
 def get_doc_info(lista):
     res = []
     for doc in lista:
-        obj  = indexes.get("docs", {})[doc[0]]
+        obj = indexes.get("docs", {})[doc[0]]
         documento = get_json_data(obj[0])
         for art in documento:
-            if(art["id"] == obj[1]):
-                res.append([art,doc[1]])
+            if (art["id"] == obj[1]):
+                res.append([art, doc[1]])
                 break
     return res
 
-#pasa la lista obtenida de la funcion get_doc_info [art,puntuacion]
+
+# pasa la lista obtenida de la funcion get_doc_info [art,puntuacion]
 def show_result(lista):
     n = len(lista)
-    if(n <= 2):
+    if (n <= 2):
         for art in lista:
-            print("puntuacion: ",art[1])
-            print("fecha: ",art[0]["date"])
-            print("titulo: ",art[0]["title"])
-            print("keywords: ",art[0]["keywords"])
-            print("articulo: ",art[0]["article"], "\n")
-    elif(n<=5):
+            print("puntuacion: ", art[1])
+            print("fecha: ", art[0]["date"])
+            print("titulo: ", art[0]["title"])
+            print("keywords: ", art[0]["keywords"])
+            print("articulo: ", art[0]["article"], "\n")
+    elif (n <= 5):
         for art in lista:
-            print("puntuacion: ",art[1])
-            print("fecha: ",art[0]["date"])
-            print("titulo: ",art[0]["title"])
-            print("keywords: ",art[0]["keywords"])
+            print("puntuacion: ", art[1])
+            print("fecha: ", art[0]["date"])
+            print("titulo: ", art[0]["title"])
+            print("keywords: ", art[0]["keywords"])
             contenido = get_snippet(art[0]["article"])
-            
+
             if (not article_searched):
                 i = 0
                 for c in art[0]["article"].split():
-                    if(i >= 100):
+                    if (i >= 100):
                         break
                     contenido += c
                     contenido += " "
                     i += 1
-        
-            print("Snippets: ", contenido, "\n")query_terms
+
+            print("Snippets: ", contenido, "\n")
     else:
         i = 0
         for art in lista:
-            if(i >= 10):
+            if (i >= 10):
                 break
-            print("puntuacion",art[1],"   fecha: ",art[0]["date"],"   titulo: ",art[0]["title"],"   keywords: ",art[0]["keywords"],"\n")
+            print("puntuacion", art[1], "   fecha: ", art[0]["date"], "   titulo: ", art[0]["title"], "   keywords: ",
+                  art[0]["keywords"], "\n")
             i += 1
     print("Noticias recuperadas: ", n)
+
 
 def get_snippet(article):
     res = ""
@@ -425,20 +430,19 @@ def get_snippet(article):
     art = art.lower()
     art = art.split()
     for term in art:
-        if(queryDict.get(term,False)):
+        if (queryDict.get(term, False)):
             queryDict[term] = False
             frase = ""
             for j in range(20):
-                k = i+(j-10)
-                if(k >= 0 and k < len(art)):
-                    frase+=art[k]
-                    frase+=" "
-            frase+="\n"
+                k = i + (j - 10)
+                if (k >= 0 and k < len(art)):
+                    frase += art[k]
+                    frase += " "
+            frase += "\n"
             res += frase
-        i+=1
+        i += 1
     return res
-    
-            
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -457,4 +461,3 @@ if __name__ == "__main__":
             if len(query) == 0:
                 break
             search_and_print(query)
-
