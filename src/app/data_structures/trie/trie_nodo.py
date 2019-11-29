@@ -18,4 +18,4 @@ class trie_nodo:
         return 0
 
     def recuperarNodo(self, letra):
-        return self.hijos[letra]
+        return self.hijos.get(letra, False)
