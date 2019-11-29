@@ -19,10 +19,10 @@ busqueda de terminos consecutivos
 import argparse
 import json
 import math
-import trie as tr
-import levenshteinTrie as search_trie
 import pickle
 import re
+
+import words_distance.dynamic_programming.word_to_trie as search_trie
 
 indexes = {}
 tries = {}
@@ -254,7 +254,7 @@ def search(query):
             extract_tolerance_damerau = item_with_tolerance.split('@')
             extract_tolerance_levenshtein = item_with_tolerance.split('%')
             if (len(extract_tolerance_damerau) > 1):
-                search_trie.damareu_levenshteinTrie(extract_tolerance_damerau[0], trie, extract_tolerance_damerau[1])
+                search_trie.damerau_levenshteinTrie(extract_tolerance_damerau[0], trie, extract_tolerance_damerau[1])
 
             elif (len(extract_tolerance_levenshtein) > 1):
                 search_trie.levenshteinTrie(extract_tolerance_levenshtein[0], trie, extract_tolerance_levenshtein[1])
@@ -265,7 +265,7 @@ def search(query):
             posting_completa = set()
             for word in words:
                 (terms, posting) = get_posting_list(word)
-                posting_completa.add(posting) 
+                posting_completa.add(posting)
                 query_words.append(terms)
 
             stack.insert(0, list(posting_completa))
@@ -280,7 +280,7 @@ def get_posting_list(item):
     terms = []
     if (item.rfind(":") != -1):
         dict = item.split(":")[0]
-        term = item.split(":")[1]query_terms
+        term = item.split(":")[1]
 
         if (re.match(r'^"', term)):
             term_list = re.sub(r'"', " ", term).split()
@@ -296,10 +296,11 @@ def get_posting_list(item):
         term_list = re.sub(r'"', " ", item).split()
         terms = term_list
         sol_dict = positional_search(term_list, "article")
-    else:query_terms
+    else:
         article_searched = True
         sol_dict = indexes.get("article", {}).get(item, {}).keys()
         terms.append(item)
+
     return (terms, list(sol_dict))
 
 
@@ -310,7 +311,7 @@ def positional_search(term_list, dict):
         posting = index.get(term, {})
         lista = []
         for key in posting.keys():
-            aux = []query_terms
+            aux = []
             aux.append(key)
             aux.append(posting[key][1])
             lista.append(aux)
@@ -330,28 +331,28 @@ def positional_intersecction(list1, list2):
     i = 0
     j = 0
     while (i < len(list1) and j < len(list2)):
-        if (list1[i][0] == list2[j][0]):query_terms
+        if (list1[i][0] == list2[j][0]):
             aux_list = []
-            pp1 = list1[i][1]
-            pp2 = list2[j][1]
-            for pos_pp1 in pp1:
-                for pos_pp2 in pp2:
-                    if (abs(pos_pp1 - pos_pp2) <= k):
-                        aux_list.append(pos_pp2)
-                    elif pos_pp2 > pos_pp1:
-                        break
-                while ((len(aux_list) != 0) and (abs(aux_list[0] - pos_pp1) > k)):
-                    aux_list.pop(0)
-                for ps in aux_list:
-                    result.setdefault(list1[i][0], []).append(ps)
-            i += 1
-            j += 1
-        else:
+        pp1 = list1[i][1]
+        pp2 = list2[j][1]
+        for pos_pp1 in pp1:
+            for pos_pp2 in pp2:
+                if (abs(pos_pp1 - pos_pp2) <= k):
+                    aux_list.append(pos_pp2)
+                elif pos_pp2 > pos_pp1:
+                    break
+            while ((len(aux_list) != 0) and (abs(aux_list[0] - pos_pp1) > k)):
+                aux_list.pop(0)
+            for ps in aux_list:
+                result.setdefault(list1[i][0], []).append(ps)
+        i += 1
+        j += 1
+    else:
 
-            if list1[i][0] < list2[j][0]:
-                i += 1
-            else:
-                j += 1
+        if list1[i][0] < list2[j][0]:
+            i += 1
+        else:
+            j += 1
 
     res = [[k, v] for k, v in result.items()]
 

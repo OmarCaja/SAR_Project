@@ -1,4 +1,4 @@
-from words_distance.dynamic_programming.damerau_leveshtein import damerau_levenshtein
+from words_distance.dynamic_programming.word_to_word import damerau_levenshtein
 
 
 def compare_word_list(word_list, searched_word, max_dist):

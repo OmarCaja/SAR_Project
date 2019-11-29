@@ -23,9 +23,6 @@ import json
 import os
 import pickle
 import re
-import trie as tr
-import json
-
 
 doc_news_index = {}
 news_counter = 1
