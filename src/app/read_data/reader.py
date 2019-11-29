@@ -7,8 +7,8 @@ def _clean_text(text):
     return clean_re.sub(' ', text)
 
 
-def get_words_list(file_name):
-    file = open(file_name, 'r')
+def get_words_list(file_path):
+    file = open(file_path, 'r')
     text = file.read()
     file.close()
 
