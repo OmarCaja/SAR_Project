@@ -56,5 +56,4 @@ class trie:
 
     def index_words_list_in_trie(self, words_list):
         for word in words_list:
-            if not self.existePalabra(word):
-                self.addPalabra(word)
+            self.addPalabra(word)
