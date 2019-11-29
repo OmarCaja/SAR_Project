@@ -6,12 +6,12 @@ from read_data import reader
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("file_path", help="File name")
+    parser.add_argument("file_name", help="File name")
 
     args = parser.parse_args()
-    file_path = args.file_path
+    file_name = args.file_name
 
-    words_list = reader.get_words_list(file_path)
+    words_list = reader.get_words_list(file_name)
     word_set = set(words_list)
     words_list = list(word_set)
     data_structures_handler.save_words_list(words_list)

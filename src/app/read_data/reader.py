@@ -1,5 +1,7 @@
 import re
 
+from constants.path_constants import DATA_PATH
+
 clean_re = re.compile('\\W+')
 
 
@@ -7,8 +9,8 @@ def _clean_text(text):
     return clean_re.sub(' ', text)
 
 
-def get_words_list(file_path):
-    file = open(file_path, 'r')
+def get_words_list(file_name):
+    file = open(DATA_PATH + file_name, 'r')
     text = file.read()
     file.close()
 
