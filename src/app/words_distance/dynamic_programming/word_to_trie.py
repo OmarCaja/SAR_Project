@@ -1,7 +1,6 @@
 import numpy as np
 
-
-def levenshtein(p,t,tolerancia):
+def levenshtein(p, t, tolerancia):
     lenpalabra = len(p)
     numNodo = t.getNumNodo()
     nodos = t.getAllNode()
@@ -14,8 +13,6 @@ def levenshtein(p,t,tolerancia):
             if(i == 0):
                 dis[i][n.indice] = n.profundidad
             else:
-                
-
                 indicePadre = n.nodo_padre.indice
 
 
@@ -62,8 +59,6 @@ def damerau_levenshtein(p,t,tolerancia):
             if(i == 0):
                 dis[i][n.indice] = n.profundidad
             else:
-                
-
                 indicePadre = n.nodo_padre.indice
 
 

@@ -1,6 +1,6 @@
 import collections
 
-from data_structures.trie import trie_nodo as node
+from . import trie_nodo as node
 
 
 class trie:
