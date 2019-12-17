@@ -22,7 +22,9 @@ import math
 import pickle
 import re
 
-import words_distance.dynamic_programming.word_to_trie as search_trie
+from words_distance.dynamic_programming.word_to_trie import levenshtein
+from words_distance.dynamic_programming.word_to_trie import damerau_levenshtein
+from data_structures.trie.trie import trie
 
 indexes = {}
 tries = {}
@@ -249,26 +251,9 @@ def search(query):
             opres = opOR(stack.pop(0), stack.pop(0))
             stack.insert(0, opres)
         else:
-            words = list()
-            item_with_tolerance = item.lower()
-            extract_tolerance_damerau = item_with_tolerance.split('@')
-            extract_tolerance_levenshtein = item_with_tolerance.split('%')
-            if (len(extract_tolerance_damerau) > 1):
-                search_trie.damerau_levenshteinTrie(extract_tolerance_damerau[0], trie, extract_tolerance_damerau[1])
-
-            elif (len(extract_tolerance_levenshtein) > 1):
-                search_trie.levenshteinTrie(extract_tolerance_levenshtein[0], trie, extract_tolerance_levenshtein[1])
-
-            else:
-                words.append(item.lower())
-
-            posting_completa = set()
-            for word in words:
-                (terms, posting) = get_posting_list(word)
-                posting_completa.add(posting)
-                query_words.append(terms)
-
-            stack.insert(0, list(posting_completa))
+            (terms, posting) = get_posting_list(item)
+            query_words.append(terms)
+            stack.insert(0, list(posting))
 
     global query_terms
     query_terms = [term for sublist in query_words for term in sublist]
@@ -276,11 +261,26 @@ def search(query):
 
 
 def get_posting_list(item):
+
     global article_searched
     terms = []
     if (item.rfind(":") != -1):
         dict = item.split(":")[0]
         term = item.split(":")[1]
+        
+        words = []
+        item_with_tolerance = term.lower()
+        extract_tolerance_damerau = item_with_tolerance.split('@')
+        extract_tolerance_levenshtein = item_with_tolerance.split('%')
+
+        if (len(extract_tolerance_damerau) > 1):
+            words = damerau_levenshtein(extract_tolerance_damerau[0], trie, extract_tolerance_damerau[1])
+
+        elif (len(extract_tolerance_levenshtein) > 1):
+            words = levenshtein(extract_tolerance_levenshtein[0], trie, extract_tolerance_levenshtein[1])
+
+        else:
+            words.append(term.lower())
 
         if (re.match(r'^"', term)):
             term_list = re.sub(r'"', " ", term).split()
