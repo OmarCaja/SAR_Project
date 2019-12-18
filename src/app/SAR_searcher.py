@@ -287,10 +287,10 @@ def get_posting_list(item):
         extract_tolerance_levenshtein = item_with_tolerance.split('%')
 
         if (len(extract_tolerance_damerau) > 1):
-            words = damerau_levenshtein(extract_tolerance_damerau[0], trie, extract_tolerance_damerau[1])
+            words = damerau_levenshtein(extract_tolerance_damerau[0], tries.get(dict, {}), extract_tolerance_damerau[1])
 
         elif (len(extract_tolerance_levenshtein) > 1):
-            words = levenshtein(extract_tolerance_levenshtein[0], trie, extract_tolerance_levenshtein[1])
+            words = levenshtein(extract_tolerance_levenshtein[0], tries.get(dict, {}), extract_tolerance_levenshtein[1])
 
         else:
             words.append(term.lower())
@@ -317,10 +317,10 @@ def get_posting_list(item):
         extract_tolerance_levenshtein = item_with_tolerance.split('%')
 
         if (len(extract_tolerance_damerau) > 1):
-            words = damerau_levenshtein(extract_tolerance_damerau[0], trie, extract_tolerance_damerau[1])
+            words = damerau_levenshtein(extract_tolerance_damerau[0], tries.get("article", {}), extract_tolerance_damerau[1])
 
         elif (len(extract_tolerance_levenshtein) > 1):
-            words = levenshtein(extract_tolerance_levenshtein[0], trie, extract_tolerance_levenshtein[1])
+            words = levenshtein(extract_tolerance_levenshtein[0], tries.get("article", {}), extract_tolerance_levenshtein[1])
 
         else:
             words.append(item.lower())
