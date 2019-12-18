@@ -276,10 +276,11 @@ def get_posting_list(item):
 
     global article_searched
     terms = []
+
     if (item.rfind(":") != -1):
         dict = item.split(":")[0]
         term = item.split(":")[1]
-        
+
         words = []
         item_with_tolerance = term.lower()
         extract_tolerance_damerau = item_with_tolerance.split('@')
@@ -310,9 +311,23 @@ def get_posting_list(item):
         terms = term_list
         sol_dict = positional_search(term_list, "article")
     else:
+        words = []
+        item_with_tolerance = item.lower()
+        extract_tolerance_damerau = item_with_tolerance.split('@')
+        extract_tolerance_levenshtein = item_with_tolerance.split('%')
+
+        if (len(extract_tolerance_damerau) > 1):
+            words = damerau_levenshtein(extract_tolerance_damerau[0], trie, extract_tolerance_damerau[1])
+
+        elif (len(extract_tolerance_levenshtein) > 1):
+            words = levenshtein(extract_tolerance_levenshtein[0], trie, extract_tolerance_levenshtein[1])
+
+        else:
+            words.append(item.lower())
+
         for word in words:
-            article_searched = word == "article"
-            sol_dict = indexes.get(dict, {}).get(word, {}).keys()
+            article_searched = True
+            sol_dict = indexes.get("article", {}).get(word, {}).keys()
             terms.append(word)
 
     return (terms, list(sol_dict))
