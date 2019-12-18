@@ -1,6 +1,6 @@
 import collections
 
-def ramificacion(palabra, trie, tolerancia):
+def levenshtein(palabra, trie, tolerancia):
     cola = collections.deque()
     cola.append((0,trie.raiz,0))
     res = set()
@@ -32,7 +32,7 @@ def ramificacion(palabra, trie, tolerancia):
             
     return list(res)
 
-def ramificacion_damerau(palabra, trie, tolerancia):
+def damerau_levenshtein(palabra, trie, tolerancia):
     cola = collections.deque()
     cola.append((0,trie.raiz,0))
     res = set()
