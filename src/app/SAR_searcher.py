@@ -203,6 +203,18 @@ def load_index(index_file):
             "docs": doc_news_index
         }
 
+def load_trie(trie_file):
+    with open(trie_file, "rb") as fh:
+        trie = pickle.load(fh)
+        (article_trie, title_trie, keyword_trie, date_trie, summary_trie) = trie
+        global tries
+        tries = {
+            "article": article_trie,
+            "title": title_trie,
+            "keywords": keyword_trie,
+            "date": date_trie,
+            "summary": summary_trie,
+        }
 
 def parse_query(query):
     output = []
@@ -287,9 +299,10 @@ def get_posting_list(item):
             terms = term_list
             sol_dict = positional_search(term_list, dict)
         else:
-            article_searched = term == "article"
-            sol_dict = indexes.get(dict, {}).get(term, {}).keys()
-            terms.append(term)
+            for word in words:
+                article_searched = word == "article"
+                sol_dict = indexes.get(dict, {}).get(word, {}).keys()
+                terms.append(word)
 
     elif (re.match(r'^"', item)):
         article_searched = True
@@ -297,9 +310,10 @@ def get_posting_list(item):
         terms = term_list
         sol_dict = positional_search(term_list, "article")
     else:
-        article_searched = True
-        sol_dict = indexes.get("article", {}).get(item, {}).keys()
-        terms.append(item)
+        for word in words:
+            article_searched = word == "article"
+            sol_dict = indexes.get(dict, {}).get(word, {}).keys()
+            terms.append(word)
 
     return (terms, list(sol_dict))
 
@@ -453,6 +467,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     load_index(args.index)
+    load_trie(args.index + "_trie")
 
     if args.q:
         search_and_print(args.q)
