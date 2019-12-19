@@ -276,6 +276,7 @@ def get_posting_list(item):
 
     global article_searched
     terms = []
+    sol_dict = []
 
     if (item.rfind(":") != -1):
         dict = item.split(":")[0]
@@ -302,7 +303,8 @@ def get_posting_list(item):
         else:
             for word in words:
                 article_searched = word == "article"
-                sol_dict = indexes.get(dict, {}).get(word, {}).keys()
+                for key in indexes.get("article", {}).get(word, {}).keys():
+                    sol_dict.append(key)
                 terms.append(word)
 
     elif (re.match(r'^"', item)):
@@ -327,10 +329,11 @@ def get_posting_list(item):
 
         for word in words:
             article_searched = True
-            sol_dict = indexes.get("article", {}).get(word, {}).keys()
+            for key in indexes.get("article", {}).get(word, {}).keys():
+                sol_dict.append(key)
             terms.append(word)
 
-    return (terms, list(sol_dict))
+    return (terms, sol_dict)
 
 
 def positional_search(term_list, dict):

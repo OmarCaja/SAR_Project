@@ -4,42 +4,43 @@ def levenshtein(p, t, tolerancia):
     lenpalabra = len(p)
     numNodo = t.getNumNodo()
     nodos = t.getAllNode()
-    dis= np.empty(dtype = np.int8,shape=(lenpalabra+1,numNodo+1))
-    res = list()
+    dis= np.empty(dtype = np.int8,shape=(lenpalabra + 1, numNodo + 1))
+    final_node_list = []
+    res = []
         
-    for i in range(lenpalabra+1):
+    for i in range(lenpalabra + 1):
         dis[i][0] = i
         for n in nodos:
             if(i == 0):
                 dis[i][n.indice] = n.profundidad
             else:
                 indicePadre = n.nodo_padre.indice
-
+                indice = n.indice
 
                 if(n.myKey == p[i-1]):
                     disMin = dis[i-1][indicePadre]
                 else:
-                    disMin = dis[i-1][indicePadre]+1
+                    disMin = dis[i-1][indicePadre] + 1
                 
-                if(dis[i][indicePadre]+1 < disMin):
-                    if(dis[i][indicePadre]+1 < disMin):
-                        disMin = dis[i][indicePadre]+1
+                if (dis[i][indicePadre] + 1 < disMin):
+                    disMin = dis[i][indicePadre] + 1
 
-                if(dis[i-1][n.indice]+1 < disMin):
-                    if(dis[i-1][n.indice]+1 < disMin):
-                        disMin = dis[i-1][n.indice]+1
+                if(dis[i-1][indice] + 1 < disMin):
+                    disMin = dis[i-1][indice] + 1
 
+                dis[i][indice] = disMin
 
-                dis[i][n.indice] = disMin
-
-                if(i == lenpalabra and n.final and disMin <= tolerancia):
-                    palabra = n.myKey
-                    padre = n.nodo_padre
-                    while padre :
-                        
-                        palabra = padre.myKey + palabra
-                        padre = padre.nodo_padre
-                    res.append(palabra)
+                tol = int(tolerancia)
+                if(i == lenpalabra and n.final and disMin <= tol):
+                    final_node_list.append(n)
+                    
+    for node in final_node_list:
+        palabra = node.myKey
+        padre = node.nodo_padre
+        while padre :
+            palabra = padre.myKey + palabra
+            padre = padre.nodo_padre
+        res.append(palabra)
     
     return res
 
