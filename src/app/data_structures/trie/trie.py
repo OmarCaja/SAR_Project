@@ -26,7 +26,6 @@ class trie:
             nodo.final = True
 
     def existePalabra(self, palabra):
-
         if (len(palabra) != 0):
             nodo = self.raiz.hijos.get(palabra[0], False)
             if (not nodo):

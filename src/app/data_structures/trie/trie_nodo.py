@@ -14,7 +14,9 @@ class trie_nodo:
             self.hijos[letra] = trie_nodo(self.profundidad + 1, self, esPalabra, letra, indice + 1)
             return 1
 
-        nodo.final = esPalabra
+        if (not nodo.final):
+            nodo.final = esPalabra
+            
         return 0
 
     def recuperarNodo(self, letra):
