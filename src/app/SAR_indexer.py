@@ -23,6 +23,7 @@ import json
 import os
 import pickle
 import re
+from data_structures.trie.trie import trie
 
 doc_news_index = {}
 news_counter = 1
@@ -33,11 +34,17 @@ keywords_index = {}
 date_index = {}
 summary_index = {}
 
-json_keys_indexes = [('article', article_index),
-                     ('title', title_index),
-                     ('keywords', keywords_index),
-                     ('date', date_index),
-                     ('summary', summary_index)]
+article_trie = trie()
+title_trie = trie()
+keywords_trie = trie()
+date_trie = trie()
+summary_trie = trie()
+
+json_keys_indexes = [('article', (article_index, article_trie)),
+                     ('title', (title_index, title_trie)),
+                     ('keywords', (keywords_index, keywords_trie)),
+                     ('date', (date_index, date_trie)),
+                     ('summary', (summary_index, summary_trie))]
 
 key_pos = 0
 index_pos = 1
@@ -121,8 +128,9 @@ def index_value_from_json(json_data, file_path):
             word_position = 1
 
             for word in value_list:
-                index_word(word, key_index[index_pos], word_position)
-
+                index, particular_trie = key_index[index_pos]
+                index_word(word, index, word_position)
+                particular_trie.addPalabra(word)
                 word_position = word_position + 1
 
         increase_news_counter()
@@ -147,6 +155,9 @@ def save_index(index, doc_name):
     with open(doc_name, "wb") as fh:
         pickle.dump(index, fh)
 
+def save_trie(trie, doc_name):
+    with open(doc_name, "wb") as fh:
+        pickle.dump(trie, fh)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -161,3 +172,5 @@ if __name__ == "__main__":
 
     save_index((article_index, title_index, keywords_index,
                 date_index, summary_index, doc_news_index), index_name)
+    
+    save_trie((article_trie, title_trie, keywords_trie, date_trie, summary_trie), index_name + '_trie')
