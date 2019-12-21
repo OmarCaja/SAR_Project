@@ -22,8 +22,8 @@ import math
 import pickle
 import re
 
-from words_distance.dynamic_programming.word_to_trie import levenshtein
-from words_distance.dynamic_programming.word_to_trie import damerau_levenshtein
+from words_distance.branch_and_bound.word_to_trie import levenshtein
+from words_distance.branch_and_bound.word_to_trie import damerau_levenshtein
 from data_structures.trie.trie import trie
 
 indexes = {}
@@ -276,7 +276,7 @@ def get_posting_list(item):
 
     global article_searched
     terms = []
-    sol_dict = []
+    sol_dict = set()
 
     if (item.rfind(":") != -1):
         dict = item.split(":")[0]
@@ -304,7 +304,7 @@ def get_posting_list(item):
             for word in words:
                 article_searched = word == "article"
                 for key in indexes.get("article", {}).get(word, {}).keys():
-                    sol_dict.append(key)
+                    sol_dict.add(key)
                 terms.append(word)
 
     elif (re.match(r'^"', item)):
@@ -330,10 +330,11 @@ def get_posting_list(item):
         for word in words:
             article_searched = True
             for key in indexes.get("article", {}).get(word, {}).keys():
-                sol_dict.append(key)
+                sol_dict.add(key)
             terms.append(word)
-
-    return (terms, sol_dict)
+            
+    res = sorted(list(sol_dict))
+    return (terms, res)
 
 
 def positional_search(term_list, dict):
