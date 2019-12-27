@@ -7,8 +7,8 @@ from words_distance.dynamic_programming.word_to_word import levenshtein as leven
 from words_distance.dynamic_programming.word_to_word import damerau_levenshtein as damerau_levenshteinwtw
 from words_distance.dynamic_programming.word_to_trie import levenshtein as dynlevenshteinwtt
 from words_distance.dynamic_programming.word_to_trie import damerau_levenshtein as dyndamerau_levenshteinwtt
-from words_distance.ramification.word_to_trie import ramificacion
-from words_distance.ramification.word_to_trie import ramificacion_damerau
+from words_distance.branch_and_bound.word_to_trie import levenshtein as ramificacion
+from words_distance.branch_and_bound.word_to_trie import damerau_levenshtein as ramificacion_damerau
 
 
 def media(lista):
