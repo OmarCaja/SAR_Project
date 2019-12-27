@@ -28,12 +28,12 @@ def levenshteinwordtoword(F, F2, words_list):
     for i in range(1,20):
         time1 = time.time()
         for word in words_list:
-            if (levenshteinwtw("casa", word) < int(tolerancia)):
+            if (levenshteinwtw("casa", word) <= int(tolerancia)):
                 F.write(word)
                 F.write(str(levenshteinwtw("casa", word)))
                 F.write("\n")
         time2 = time.time()
-        F = open("basura.txt", "w")
+        F = open("basura.txt", "w", encoding='utf-8')
         timelist.append(time2 - time1)
     F2.write("\nMedia de tiempo:")
     F2.write(str(media(timelist)))
@@ -45,7 +45,7 @@ def damerau_levenshteinwordtoword(F, F2, words_list):
     for i in range(1,20):
         time1 = time.time()
         for word in words_list:
-            if (levenshteinwtw("casa", word) < int(tolerancia)):
+            if (levenshteinwtw("casa", word) <= int(tolerancia)):
                 F.write(word)
                 F.write(" ")
                 F.write(str(damerau_levenshteinwtw("casa", word)))
@@ -126,12 +126,12 @@ if __name__ == "__main__":
     words_list = list(word_set)
 
     timelist = []
-    Fresult = open("resultlev.txt", "w")
-    Fresultdamerau = open("resultdam.txt", "w")
-    Fresultdyn = open("resultdynlev.txt", "w")
-    Fresultdyndamerau = open("resultdynda,.txt", "w")
-    Fresultram = open("resultramlev.txt", "w")
-    Fresultramdamerau = open("resultramdam.txt", "w")
+    Fresult = open("resultlev.txt", "w", encoding='utf-8')
+    Fresultdamerau = open("resultdam.txt", "w", encoding='utf-8')
+    Fresultdyn = open("resultdynlev.txt", "w", encoding='utf-8')
+    Fresultdyndamerau = open("resultdynda,.txt", "w", encoding='utf-8')
+    Fresultram = open("resultramlev.txt", "w", encoding='utf-8')
+    Fresultramdamerau = open("resultramdam.txt", "w", encoding='utf-8')
     Ftime = open("time.txt", "w")
     Ftime.write("tiempos de Levenshtein")
     levenshteinwordtoword(Fresult, Ftime, words_list)

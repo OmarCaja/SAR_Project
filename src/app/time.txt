@@ -1,7 +1,18 @@
 tiempos de Levenshtein
-Media de tiempo:4.352465064902055
-Desviacion tipica de tiempo: 0.018994284058929136
+Media de tiempo:4.337837068658126
+Desviacion tipica de tiempo: 0.023528957007927894
 tiempos de Damerau-Levenshtein
-Media de tiempo: 4.340273248521905
-Desviacion tipica de tiempo: 0.038451918279253844
+Media de tiempo: 4.338621716750295
+Desviacion tipica de tiempo: 0.02546285006631486
 tiempos de Levenshtein con programacion dinamica
+Media de tiempo: 3.386479800207573
+Desviacion tipica de tiempo: 1.346705718768565
+tiempos de Damerau-Levenshtein con programacion dinamica
+Media de tiempo: 2.919056751226124
+Desviacion tipica de tiempo: 1.4197483157029323
+tiempos de Levenshtein con ramificacion
+Media de tiempo: 2.3509200146323757
+Desviacion tipica de tiempo: 1.7040145953854968
+tiempos de Damerau-Levenshtein con ramificacion
+Media de tiempo: 1.9749263859631723
+Desviacion tipica de tiempo: 1.7682131268526198
