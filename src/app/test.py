@@ -25,6 +25,7 @@ def desviacion_tipica(lista):
     return sqrt(varianza(lista))
 
 def levenshteinwordtoword(F, F2, words_list):
+    timelist=[]
     for i in range(1,20):
         time1 = time.time()
         for word in words_list:
@@ -39,9 +40,11 @@ def levenshteinwordtoword(F, F2, words_list):
     F2.write(str(media(timelist)))
     F2.write("\nDesviacion tipica de tiempo: ")
     F2.write(str(desviacion_tipica(timelist)))
+    timelist
 
 
 def damerau_levenshteinwordtoword(F, F2, words_list):
+    timelist = []
     for i in range(1,20):
         time1 = time.time()
         for word in words_list:
@@ -60,6 +63,7 @@ def damerau_levenshteinwordtoword(F, F2, words_list):
 
 
 def dynamiclevenshteintrie(F, F2, trie, tolerancia):
+    timelist = []
     for i in range(1,20):
         time1 = time.time()
         F.write(str(dynlevenshteinwtt("casa", trie, tolerancia)))
@@ -73,6 +77,7 @@ def dynamiclevenshteintrie(F, F2, trie, tolerancia):
 
 
 def dynamicdameraulevenshteintrie(F, F2, trie, tolerancia):
+    timelist = []
     for i in range(1,20):
         time1 = time.time()
         F.write(str(dyndamerau_levenshteinwtt("casa", trie, tolerancia)))
@@ -86,6 +91,7 @@ def dynamicdameraulevenshteintrie(F, F2, trie, tolerancia):
 
 
 def ramificacionlevenshteintrie(F, F2, trie , tolerancia):
+    timelist = []
     for i in range(1,20):
         time1 = time.time()
         F.write(str(ramificacion("casa", trie, tolerancia)))
@@ -99,6 +105,7 @@ def ramificacionlevenshteintrie(F, F2, trie , tolerancia):
 
 
 def ramificaciondameraulevenshteintrie(F, F2, trie, tolerancia):
+    timelist = []
     for i in range(1,20):
         time1 = time.time()
         F.write(str(ramificacion_damerau("casa", trie, tolerancia)))
@@ -125,7 +132,6 @@ if __name__ == "__main__":
     word_set = set(words_list)
     words_list = list(word_set)
 
-    timelist = []
     Fresult = open("resultlev.txt", "w", encoding='utf-8')
     Fresultdamerau = open("resultdam.txt", "w", encoding='utf-8')
     Fresultdyn = open("resultdynlev.txt", "w", encoding='utf-8')
