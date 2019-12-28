@@ -10,7 +10,7 @@ def _clean_text(text):
 
 
 def get_words_list(file_name):
-    file = open(DATA_PATH + file_name, 'r')
+    file = open(DATA_PATH + file_name, 'r', encoding='utf-8')
     text = file.read()
     file.close()
 
