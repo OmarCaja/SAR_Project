@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 '''
 Proyecto de Practicas SAR: searcher
 
