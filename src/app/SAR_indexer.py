@@ -23,6 +23,7 @@ import json
 import os
 import pickle
 import re
+
 from data_structures.trie.trie import trie
 
 doc_news_index = {}
@@ -155,9 +156,11 @@ def save_index(index, doc_name):
     with open(doc_name, "wb") as fh:
         pickle.dump(index, fh)
 
+
 def save_trie(trie, doc_name):
     with open(doc_name, "wb") as fh:
         pickle.dump(trie, fh)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -172,5 +175,5 @@ if __name__ == "__main__":
 
     save_index((article_index, title_index, keywords_index,
                 date_index, summary_index, doc_news_index), index_name)
-    
+
     save_trie((article_trie, title_trie, keywords_trie, date_trie, summary_trie), index_name + '_trie')

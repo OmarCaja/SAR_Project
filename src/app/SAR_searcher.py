@@ -22,9 +22,8 @@ import math
 import pickle
 import re
 
-from words_distance.branch_and_bound.word_to_trie import levenshtein
 from words_distance.branch_and_bound.word_to_trie import damerau_levenshtein
-from data_structures.trie.trie import trie
+from words_distance.branch_and_bound.word_to_trie import levenshtein
 
 indexes = {}
 tries = {}
@@ -203,6 +202,7 @@ def load_index(index_file):
             "docs": doc_news_index
         }
 
+
 def load_trie(trie_file):
     with open(trie_file, "rb") as fh:
         trie = pickle.load(fh)
@@ -215,6 +215,7 @@ def load_trie(trie_file):
             "date": date_trie,
             "summary": summary_trie,
         }
+
 
 def parse_query(query):
     output = []
@@ -273,7 +274,6 @@ def search(query):
 
 
 def get_posting_list(item):
-
     global article_searched
     terms = []
     sol_dict = set()
@@ -319,10 +319,12 @@ def get_posting_list(item):
         extract_tolerance_levenshtein = item_with_tolerance.split('%')
 
         if (len(extract_tolerance_damerau) > 1):
-            words = damerau_levenshtein(extract_tolerance_damerau[0], tries.get("article", {}), extract_tolerance_damerau[1])
+            words = damerau_levenshtein(extract_tolerance_damerau[0], tries.get("article", {}),
+                                        extract_tolerance_damerau[1])
 
         elif (len(extract_tolerance_levenshtein) > 1):
-            words = levenshtein(extract_tolerance_levenshtein[0], tries.get("article", {}), extract_tolerance_levenshtein[1])
+            words = levenshtein(extract_tolerance_levenshtein[0], tries.get("article", {}),
+                                extract_tolerance_levenshtein[1])
 
         else:
             words.append(item.lower())
@@ -332,7 +334,7 @@ def get_posting_list(item):
             for key in indexes.get("article", {}).get(word, {}).keys():
                 sol_dict.add(key)
             terms.append(word)
-            
+
     res = sorted(list(sol_dict))
     return (terms, res)
 
