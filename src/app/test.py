@@ -1,5 +1,6 @@
 import argparse
 import time
+import statistics
 from math import sqrt
 
 from data_structures.trie import trie
@@ -13,7 +14,8 @@ from words_distance.dynamic_programming.word_to_word import levenshtein as leven
 
 
 def media(lista):
-    return sum(lista) / len(lista)
+    
+    return statistics.mean(lista)
 
 
 def varianza(lista):
@@ -25,7 +27,7 @@ def varianza(lista):
 
 
 def desviacion_tipica(lista):
-    return sqrt(varianza(lista))
+    return statistics.stdev(lista)
 
 
 def levenshteinwordtoword(F, F2, words_list):
@@ -33,10 +35,7 @@ def levenshteinwordtoword(F, F2, words_list):
     for i in range(1, 20):
         time1 = time.time()
         for word in words_list:
-            if (levenshteinwtw("casa", word) <= int(tolerancia)):
-                F.write(word)
-                F.write(str(levenshteinwtw("casa", word)))
-                F.write("\n")
+            levenshteinwtw("casa", word)
         time2 = time.time()
         F = open("../../tests_results/basura.txt", "w", encoding='utf-8')
         timelist.append(time2 - time1)
@@ -44,7 +43,6 @@ def levenshteinwordtoword(F, F2, words_list):
     F2.write(str(media(timelist)))
     F2.write("\nDesviacion tipica de tiempo: ")
     F2.write(str(desviacion_tipica(timelist)))
-    timelist
 
 
 def damerau_levenshteinwordtoword(F, F2, words_list):
@@ -52,11 +50,7 @@ def damerau_levenshteinwordtoword(F, F2, words_list):
     for i in range(1, 20):
         time1 = time.time()
         for word in words_list:
-            if (levenshteinwtw("casa", word) <= int(tolerancia)):
-                F.write(word)
-                F.write(" ")
-                F.write(str(damerau_levenshteinwtw("casa", word)))
-                F.write("\n")
+            damerau_levenshteinwtw("casa", word)
         time2 = time.time()
         F = open("../../tests_results/basura.txt", "w", encoding='utf-8')
         timelist.append(time2 - time1)
@@ -70,8 +64,9 @@ def dynamiclevenshteintrie(F, F2, trie, tolerancia):
     timelist = []
     for i in range(1, 20):
         time1 = time.time()
-        F.write(str(dynlevenshteinwtt("casa", trie, tolerancia)))
+        res = dynlevenshteinwtt("casa", trie, tolerancia)
         time2 = time.time()
+        F.write(str(res))
         F = open("../../tests_results/basura.txt", "w", encoding='utf-8')
         timelist.append(time2 - time1)
     F2.write("\nMedia de tiempo: ")
@@ -84,8 +79,9 @@ def dynamicdameraulevenshteintrie(F, F2, trie, tolerancia):
     timelist = []
     for i in range(1, 20):
         time1 = time.time()
-        F.write(str(dyndamerau_levenshteinwtt("casa", trie, tolerancia)))
+        res = dyndamerau_levenshteinwtt("casa", trie, tolerancia)
         time2 = time.time()
+        F.write(str(res))
         F = open("../../tests_results/basura.txt", "w", encoding='utf-8')
         timelist.append(time2 - time1)
     F2.write("\nMedia de tiempo: ")
@@ -98,8 +94,9 @@ def ramificacionlevenshteintrie(F, F2, trie, tolerancia):
     timelist = []
     for i in range(1, 20):
         time1 = time.time()
-        F.write(str(ramificacion("casa", trie, tolerancia)))
+        res = ramificacion("casa", trie, tolerancia)
         time2 = time.time()
+        F.write(str(res))
         F = open("../../tests_results/basura.txt", "w", encoding='utf-8')
         timelist.append(time2 - time1)
     F2.write("\nMedia de tiempo: ")
@@ -112,8 +109,9 @@ def ramificaciondameraulevenshteintrie(F, F2, trie, tolerancia):
     timelist = []
     for i in range(1, 20):
         time1 = time.time()
-        F.write(str(ramificacion_damerau("casa", trie, tolerancia)))
+        res = ramificacion_damerau("casa", trie, tolerancia)
         time2 = time.time()
+        F.write(str(res))
         F = open("../../tests_results/basura.txt", "w", encoding='utf-8')
         timelist.append(time2 - time1)
     F2.write("\nMedia de tiempo: ")
