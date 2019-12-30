@@ -1,3 +1,4 @@
+import json
 import re
 
 from constants.path_constants import DATA_PATH
@@ -5,7 +6,7 @@ from constants.path_constants import DATA_PATH
 clean_re = re.compile('\\W+')
 
 
-def _clean_text(text):
+def clean_text(text):
     return clean_re.sub(' ', text)
 
 
@@ -15,5 +16,10 @@ def get_words_list(file_name):
     file.close()
 
     text_in_lower = text.lower()
-    cleaned_text = _clean_text(text_in_lower)
+    cleaned_text = clean_text(text_in_lower)
     return cleaned_text.split()
+
+
+def get_json_data(doc_name):
+    with open(doc_name, "r") as json_file:
+        return json.load(json_file)

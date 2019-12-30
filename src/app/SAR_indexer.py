@@ -17,12 +17,12 @@ busqueda de terminos consecutivos
 '''
 
 import argparse
-import json
 import os
-import pickle
-import re
 
+from constants.path_constants import NEWS_PATH
+from data_structures.data_structures_handler import save_news_index
 from data_structures.trie.trie import trie
+from read_data.reader import get_json_data, clean_text
 
 doc_news_index = {}
 news_counter = 1
@@ -53,12 +53,6 @@ position_pos = 1
 
 json_new_id = 'id'
 
-clean_re = re.compile('\\W+')
-
-
-def clean_text(text):
-    return clean_re.sub(' ', text)
-
 
 def lowercase_text(text):
     return text.lower()
@@ -75,11 +69,6 @@ def increase_news_counter():
 
 def get_new_key():
     return get_news_counter()
-
-
-def get_json_data(doc_name):
-    with open(doc_name, "r") as json_file:
-        return json.load(json_file)
 
 
 def index_word(word, index, pos):
@@ -150,16 +139,6 @@ def print_index(index):
         print(item)
 
 
-def save_index(index, doc_name):
-    with open(doc_name, "wb") as fh:
-        pickle.dump(index, fh)
-
-
-def save_trie(trie, doc_name):
-    with open(doc_name, "wb") as fh:
-        pickle.dump(trie, fh)
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("directory", help="News directory")
@@ -169,9 +148,9 @@ if __name__ == "__main__":
     docs_directory = args.directory
     index_name = args.index
 
-    index_files_from_directory(docs_directory)
+    index_files_from_directory(NEWS_PATH + docs_directory)
 
-    save_index((article_index, title_index, keywords_index,
-                date_index, summary_index, doc_news_index), index_name)
+    save_news_index((article_index, title_index, keywords_index,
+                     date_index, summary_index, doc_news_index), index_name)
 
-    save_trie((article_trie, title_trie, keywords_trie, date_trie, summary_trie), index_name + '_trie')
+    save_news_index((article_trie, title_trie, keywords_trie, date_trie, summary_trie), index_name + '_trie')

@@ -17,9 +17,10 @@ busqueda de terminos consecutivos
 import argparse
 import json
 import math
-import pickle
 import re
 
+from data_structures.data_structures_handler import import_news_index
+from read_data.reader import get_json_data, clean_text
 from words_distance.branch_and_bound.word_to_trie import damerau_levenshtein
 from words_distance.branch_and_bound.word_to_trie import levenshtein
 
@@ -28,22 +29,11 @@ tries = {}
 article_searched = False
 query_terms = []
 
-clean_re = re.compile('\\W+')
-
-
-def clean_text(text):
-    return clean_re.sub(' ', text)
-
 
 def load_json(filename):
     with open(filename) as fh:
         obj = json.load(fh)
     return obj
-
-
-def get_json_data(doc_name):
-    with open(doc_name, "r") as json_file:
-        return json.load(json_file)
 
 
 def opAND(list1, list2):
@@ -187,32 +177,30 @@ operators = {
 
 
 def load_index(index_file):
-    with open(index_file, "rb") as fh:
-        indeces = pickle.load(fh)
-        (article_index, title_index, keyword_index, date_index, summary_index, doc_news_index) = indeces
-        global indexes
-        indexes = {
-            "article": article_index,
-            "title": title_index,
-            "keywords": keyword_index,
-            "date": date_index,
-            "summary": summary_index,
-            "docs": doc_news_index
-        }
+    indeces = import_news_index(index_file)
+    (article_index, title_index, keyword_index, date_index, summary_index, doc_news_index) = indeces
+    global indexes
+    indexes = {
+        "article": article_index,
+        "title": title_index,
+        "keywords": keyword_index,
+        "date": date_index,
+        "summary": summary_index,
+        "docs": doc_news_index
+    }
 
 
 def load_trie(trie_file):
-    with open(trie_file, "rb") as fh:
-        trie = pickle.load(fh)
-        (article_trie, title_trie, keyword_trie, date_trie, summary_trie) = trie
-        global tries
-        tries = {
-            "article": article_trie,
-            "title": title_trie,
-            "keywords": keyword_trie,
-            "date": date_trie,
-            "summary": summary_trie,
-        }
+    trie = import_news_index(trie_file)
+    (article_trie, title_trie, keyword_trie, date_trie, summary_trie) = trie
+    global tries
+    tries = {
+        "article": article_trie,
+        "title": title_trie,
+        "keywords": keyword_trie,
+        "date": date_trie,
+        "summary": summary_trie,
+    }
 
 
 def parse_query(query):
